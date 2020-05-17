@@ -1,0 +1,11 @@
+
+
+# Compilation products
+bigbang
+realms
+*.o
+*.exe
+
+# Program data and output files
+*.svg
+*.txt
