@@ -7,7 +7,7 @@ std::string makeNameCore(int depth);
 std::vector<std::string> usedNames;
 
 std::vector<int> wordCount{
-    1, 1, 2, 2, 2, 3
+    1, 1, 1, 2, 2, 2
 };
 
 std::vector<std::string> syllableForms{
