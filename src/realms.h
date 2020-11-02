@@ -103,6 +103,10 @@ std::string intToString(int number);
 void rngInit(int seed);
 int rngNext(int max);
 
+// bb_namegen.cpp
+std::string makeName();
+
+
 template<class T>
 const T& rngVector(const std::vector<T> &v) {
     return v[rngNext(v.size())];
