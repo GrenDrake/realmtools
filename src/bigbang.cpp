@@ -12,15 +12,14 @@
 
 #include "realms.h"
 
-const int MAX_FACTIONS = 9;
+const int MAX_FACTIONS = 20;
 const int MAX_HEIGHT = 50;
 const int MAX_WIDTH = 90;
 const int MAX_ITERATIONS = 100;
 const int MAX_REALMS = 1600;
-const int SPECIES_DIVISOR = 5;
-const int MAX_SPECIES = MAX_REALMS / 5;
 const int RNG_SEED = 234;
 const int MAX_LINK_DIST = 10;
+const int SPECIES_MIN_DIST = 4;
 
 struct Color {
     int r, g, b;
@@ -53,8 +52,6 @@ std::vector<Color> factionColours = {
     {255,255,0},
     {255,80,5}
 };
-
-
 
 // https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
 bool linesIntersect(double a, double b, double c, double d,
@@ -315,46 +312,38 @@ int main() {
         if (r->faction < 0) r->faction = 0;
     }
 
-    std::cerr << "Building species...\n";
-    std::vector<Stance> stanceList{
-        Stance::Biped, Stance::Biped, Stance::Biped, Stance::Biped,
-        Stance::Biped, Stance::Quad, Stance::Quad, Stance::Taur,
-        Stance::Taur, Stance::Thero,
-    };
-    std::vector<Wings> wingList{
-        Wings::None, Wings::None, Wings::None, Wings::None,
-        Wings::Arm, Wings::Arm, Wings::Back,
-    };
-    unsigned speciesToMake = MAX_SPECIES;
-    if (speciesToMake > world.realms.size() / SPECIES_DIVISOR) {
-        speciesToMake = world.realms.size() / SPECIES_DIVISOR;
-    }
-    for (unsigned i = 0; i < speciesToMake; ++i) {
-        Species *s = new Species;
-        s->ident = i + 1;
-        s->name = makeName();
-        s->height = 50 + rngNext(150);
-        s->isBeastFolk = rngNext(13) == 1;
-        s->stance = rngVector(stanceList);
-        if (s->stance == Stance::Taur)  s->wings = Wings::None;
-        else                            s->wings = rngVector(wingList);
-        world.species.push_back(s);
-    }
-    unsigned counter = 0;
-    for (Realm *r : world.realms) {
-        Species *s = nullptr;
-        if (counter < world.species.size()) {
-            s = world.species[counter];
-        } else {
-            s = rngVector(world.species);
-        }
-        r->species = s->ident;
-        ++counter;
-    }
+    std::cerr << "Placing species...\n";
+    Realm *home = nullptr;
+    do {
+        int iterations = 0;
 
+        do {
+            ++iterations;
+            home = rngVector(world.realms);
+            if (home->species >= 0) home = nullptr;
+            else {
+                for (Species *s2 : world.species) {
+                    if (s2->homeRealm < 0) continue;
+                    if (world.findDistance(s2->homeRealm, home->ident) < SPECIES_MIN_DIST) {
+                        home = nullptr;
+                        break;
+                    }
+                }
+            }
+        } while (!home && iterations < 25);
+
+        if (home) {
+            Species *s = makeSpecies();
+            world.species.push_back(s);
+            home->species = s->ident;
+            s->homeRealm = home->ident;
+        } else {
+            std::cerr << "\tSpecies generation terminated -- could not place.\n";
+            std::cerr << "\tGenerated " << world.species.size() << " species.\n";
+        }
+    } while(home);
 
     std::cerr << "Saving data to file...\n";
     world.writeToFile("realms.txt");
-
     return 0;
 }

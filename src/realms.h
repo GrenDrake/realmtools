@@ -24,6 +24,7 @@ struct Species {
     bool isBeastFolk;
     int height; // centimeters
     std::string skinType;
+    int homeRealm;
 };
 
 enum class Biome {
@@ -103,8 +104,9 @@ std::string intToString(int number);
 void rngInit(int seed);
 int rngNext(int max);
 
-// bb_namegen.cpp
+// bb_generator.cpp
 std::string makeName();
+Species* makeSpecies();
 
 
 template<class T>

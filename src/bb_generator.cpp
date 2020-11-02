@@ -54,3 +54,31 @@ std::string makeName() {
 
     return "(namegen exceeded max iterations)";
 }
+
+
+
+std::vector<Stance> stanceList{
+    Stance::Biped, Stance::Biped, Stance::Biped, Stance::Biped,
+    Stance::Biped, Stance::Quad, Stance::Quad, Stance::Taur,
+    Stance::Taur, Stance::Thero,
+};
+
+std::vector<Wings> wingList{
+    Wings::None, Wings::None, Wings::None, Wings::None,
+    Wings::Arm, Wings::Arm, Wings::Back,
+};
+
+Species* makeSpecies() {
+    static int identCounter = 0;
+    Species *s = new Species;
+    s->ident = identCounter;
+    ++identCounter;
+    s->name = makeName();
+    s->height = 50 + rngNext(150);
+    s->isBeastFolk = rngNext(13) == 1;
+    s->stance = rngVector(stanceList);
+    s->homeRealm = -1;
+    if (s->stance == Stance::Taur)  s->wings = Wings::None;
+    else                            s->wings = rngVector(wingList);
+    return s;
+}

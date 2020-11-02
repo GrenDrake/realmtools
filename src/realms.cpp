@@ -107,6 +107,7 @@ void showSpecies(World &world, const std::vector<std::string> &arguments) {
     }
 
     std::cout << s->name << " [" << s->ident << "]\n";
+    std::cout << "Home Realm: " << s->homeRealm << "\n";
     std::cout << "Height: " << s->height << " cm\n";
     std::cout << "Stance: " << s->stance << "\n";
     std::cout << "Wings: " << s->wings << "\n";

@@ -68,6 +68,7 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(2) << static_cast<int>(s->wings) << " | ";
         realmList << s->isBeastFolk << " | ";
         realmList << std::setw(3) << s->height << " | ";
+        realmList << std::setw(4) << s->homeRealm << " | ";
         realmList << s->name << "\n";
     }
 
@@ -156,7 +157,7 @@ bool World::readFromFile(const std::string &filename) {
             newFactions.push_back(f);
 
         } else if (parts[0] == "S") {
-            if (parts.size() != 7) {
+            if (parts.size() != 8) {
                 std::cerr << lineNo << ": species has wrong number of data items.\n";
                 continue;
             }
@@ -167,7 +168,8 @@ bool World::readFromFile(const std::string &filename) {
             s->wings        = static_cast<Wings>(strToInt(parts[3]));
             s->isBeastFolk  = strToInt(parts[4]);
             s->height       = strToInt(parts[5]);
-            s->name         = parts[6];
+            s->homeRealm    = strToInt(parts[6]);
+            s->name         = parts[7];
             newSpecies.push_back(s);
 
         } else {

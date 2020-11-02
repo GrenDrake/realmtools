@@ -70,12 +70,17 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
         } else {
             svgMap << "FF00FF\" />\n" << std::dec;
         }
-        svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY - 7;
-        svgMap << "\" text-anchor=\"middle\" font-size=\"smaller\">";
-        svgMap << r->name << " [" << r->ident << "]</text>\n";
-        // svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY + 7;
-        // svgMap << "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" font-size=\"smaller\">";
-        // svgMap << r->species << "</text>\n";
+        // svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY - 7;
+        // svgMap << "\" text-anchor=\"middle\" font-size=\"smaller\">";
+        // svgMap << r->name << " [" << r->ident << "]</text>\n";
+        if (r->species >= 0) {
+            Species *species = world.speciesByIdent(r->species);
+            if (species) {
+                svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY + 7;
+                svgMap << "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" font-size=\"smaller\">";
+                svgMap << species->name << "</text>\n";
+            }
+        }
     }
 
     // draw faction legend
