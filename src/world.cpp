@@ -302,6 +302,14 @@ void World::setDistances(int ident) {
     }
 }
 
+int World::factionSize(int ident) const {
+    int count = 0;
+    for (Realm *r : realms) {
+        if (r->faction == ident) ++count;
+    }
+    return count;
+}
+
 
 std::ostream& operator<<(std::ostream &out, const Biome &biome) {
     switch(biome) {

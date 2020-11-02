@@ -85,6 +85,7 @@ struct World {
     std::vector<int> findPath(int from, int to);
     int findDistance(int from, int to);
     void setDistances(int ident);
+    int factionSize(int ident) const;
 };
 
 std::ostream& operator<<(std::ostream &out, const Biome &biome);
