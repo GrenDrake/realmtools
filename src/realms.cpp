@@ -12,6 +12,7 @@
 
 #include "realms.h"
 
+void showHelp(World &world, const std::vector<std::string> &arguments);
 
 void makeSVG(World &world, const std::vector<std::string> &arguments);
 void statsDispatcher(World &world, const std::vector<std::string> &arguments);
@@ -115,6 +116,7 @@ void showSpecies(World &world, const std::vector<std::string> &arguments) {
     std::cout << '\n';
 }
 
+
 void checkNames(World &world, const std::vector<std::string> &arguments) {
     std::cout << "Factions:\n" << std::left;
     for (Faction *r : world.factions) {
@@ -146,19 +148,46 @@ typedef void (*cmdHandler)(World&, const std::vector<std::string>&);
 struct CommandInfo {
     std::string name;
     cmdHandler func;
+    int minArgs, maxArgs;
+    std::string usage, description;
 };
 std::vector<CommandInfo> commands{
-    { "svg",           makeSVG },
-    { "path",          findPath },
-    { "dist",          findDistance },
-    { "realm",         showRealm },
-    { "species",       showSpecies },
-    { "list",          listDispatcher },
-    { "stats",         statsDispatcher },
-    { "checknames",    checkNames },
-    { "quit",          nullptr },
-    { "q",             nullptr },
+    { "svg",           makeSVG,         1, 1, "", "" },
+    { "path",          findPath,        1, 1, "", "" },
+    { "dist",          findDistance,    1, 1, "", "" },
+    { "realm",         showRealm,       1, 1, "", "" },
+    { "species",       showSpecies,     1, 1, "", "" },
+    { "list",          listDispatcher,  2, 2, "[ factions | realms | species ]",
+                                              "Displays list of all factions, realms, or species." },
+    { "stats",         statsDispatcher, 1, 1, "", "" },
+    { "help",          showHelp,        1, 2, "[command]",
+                                              "Display list of valid commands. If a command is specified, displays information on command usage instead." },
+    { "checknames",    checkNames,      1, 1, "",
+                                              "Check length of names does not exceed maximum." },
+    { "quit",          nullptr,         1, 1, "",
+                                              "Exit program." },
+    { "q",             nullptr,         1, 1, "",
+                                              "Exit program." },
 };
+
+void showHelp(World &world, const std::vector<std::string> &arguments) {
+    if (arguments.size() > 1) {
+        for (const CommandInfo &cmd : commands) {
+            if (cmd.name == arguments[1]) {
+                std::cout << cmd.name << ' ' << cmd.usage << "\n\n";
+                std::cout << cmd.description << "\n\n";
+                return;
+            }
+        }
+        std::cout << "Unknown command \"" << arguments[1] << "\".\n";
+        return;
+    }
+
+    std::cout << "Valid commands:\n" << std::left;
+    for (const CommandInfo &cmd : commands) {
+        std::cout << "  " << std::setw(12) << cmd.name << "  " << cmd.usage << "\n";
+    }
+}
 
 bool processCommand(World &world, std::string commandText) {
     auto parts = explodeOnWhitespace(commandText);
@@ -173,7 +202,11 @@ bool processCommand(World &world, std::string commandText) {
     }
 
     if (cmd) {
-        if (cmd->func)  cmd->func(world, parts);
+        if (cmd->func)  {
+            if (parts.size() < cmd->minArgs || parts.size() > cmd->maxArgs) {
+                std::cout << "Invalid argument count. Try \"help " << cmd->name << "\" for usage.\n\n";
+            } else cmd->func(world, parts);
+        }
         else            return true;
     } else {
         std::cout << "Unknown command \"" << trim(commandText) << "\"\n\n";
