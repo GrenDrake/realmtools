@@ -46,7 +46,7 @@ struct Realm {
     int species;
     Biome biome[2];
     std::vector<Link> links;
-    int diameter;
+    int diameter; // kilometres
     int populationDensity;
     int faction;
     bool factionHome;
