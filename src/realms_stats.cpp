@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <cmath>
+// #include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
@@ -12,6 +12,7 @@
 
 #include "realms.h"
 
+const double PI = 3.14159265358979323846;
 
 void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     int speciesCount = world.species.size();
@@ -92,7 +93,7 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
         if (r->populationDensity < minPopDensity) minPopDensity = r->populationDensity;
         totalPopDensity += r->populationDensity;
 
-        int area = r->diameter/2 * r->diameter/2 * M_PI;
+        int area = r->diameter/2 * r->diameter/2 * PI;
         totalPopulation += area * r->populationDensity;
     }
 

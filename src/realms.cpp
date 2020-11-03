@@ -148,7 +148,7 @@ typedef void (*cmdHandler)(World&, const std::vector<std::string>&);
 struct CommandInfo {
     std::string name;
     cmdHandler func;
-    int minArgs, maxArgs;
+    unsigned minArgs, maxArgs;
     std::string usage, description;
 };
 std::vector<CommandInfo> commands{
@@ -159,7 +159,8 @@ std::vector<CommandInfo> commands{
     { "species",       showSpecies,     1, 1, "", "" },
     { "list",          listDispatcher,  2, 2, "[ factions | realms | species ]",
                                               "Displays list of all factions, realms, or species." },
-    { "stats",         statsDispatcher, 1, 1, "", "" },
+    { "stats",         statsDispatcher, 2, 2, "[ factions | realms | species ]",
+                                              "" },
     { "help",          showHelp,        1, 2, "[command]",
                                               "Display list of valid commands. If a command is specified, displays information on command usage instead." },
     { "checknames",    checkNames,      1, 1, "",
