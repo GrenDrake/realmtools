@@ -57,6 +57,25 @@ void findDistance(World &world, const std::vector<std::string> &arguments) {
     std::cout << world.findDistance(from, to) << "\n\n";
 }
 
+
+void findNear(World &world, const std::vector<std::string> &arguments) {
+    int to = strToInt(arguments[1]);
+    int dist = strToInt(arguments[2]);
+    if (to < 0 || dist < 1) {
+        std::cout << "Invalid argument.\n\n";
+        return;
+    }
+
+    for (const Realm *r : world.realms) {
+        if (r->ident == to) continue;
+        int d = world.findDistance(to, r->ident);
+        if (d <= dist) {
+            std::cout << r->name << "\n";
+        }
+    }
+    std::cout << '\n';
+}
+
 void showRealm(World &world, const std::vector<std::string> &arguments) {
     std::string fromStr;
     std::cout << "realm#> ";
@@ -155,6 +174,8 @@ std::vector<CommandInfo> commands{
     { "svg",           makeSVG,         1, 1, "", "" },
     { "path",          findPath,        1, 1, "", "" },
     { "dist",          findDistance,    1, 1, "", "" },
+    { "near",          findNear,        3, 3, "(to realm) (within distance)",
+                                              "Display a list of realms within a certain distance of the one specified." },
     { "realm",         showRealm,       1, 1, "", "" },
     { "species",       showSpecies,     1, 1, "", "" },
     { "list",          listDispatcher,  2, 2, "[ factions | realms | species ]",
