@@ -19,15 +19,8 @@ void statsDispatcher(World &world, const std::vector<std::string> &arguments);
 void listDispatcher(World &world, const std::vector<std::string> &arguments);
 
 void findPath(World &world, const std::vector<std::string> &arguments) {
-    std::string fromStr, toStr;
-    std::cout << "from> ";
-    std::getline(std::cin, fromStr);
-    if (fromStr.empty()) return;
-    std::cout << "to> ";
-    std::getline(std::cin, toStr);
-    if (toStr.empty()) return;
-    int from = strToInt(fromStr);
-    int to = strToInt(toStr);
+    int from = strToInt(arguments[1]);
+    int to = strToInt(arguments[2]);
     if (from < 0 || to < 0) return;
 
     std::cout << "Path from " << from << " to " << to << ": ";
@@ -42,15 +35,8 @@ void findPath(World &world, const std::vector<std::string> &arguments) {
 }
 
 void findDistance(World &world, const std::vector<std::string> &arguments) {
-    std::string fromStr, toStr;
-    std::cout << "from> ";
-    std::getline(std::cin, fromStr);
-    if (fromStr.empty()) return;
-    std::cout << "to> ";
-    std::getline(std::cin, toStr);
-    if (toStr.empty()) return;
-    int from = strToInt(fromStr);
-    int to = strToInt(toStr);
+    int from = strToInt(arguments[1]);
+    int to = strToInt(arguments[2]);
     if (from < 0 || to < 0) return;
 
     std::cout << "Distance from " << from << " to " << to << ": ";
@@ -77,11 +63,7 @@ void findNear(World &world, const std::vector<std::string> &arguments) {
 }
 
 void showRealm(World &world, const std::vector<std::string> &arguments) {
-    std::string fromStr;
-    std::cout << "realm#> ";
-    std::getline(std::cin, fromStr);
-    if (fromStr.empty()) return;
-    int from = strToInt(fromStr);
+    int from = strToInt(arguments[1]);
     if (from < 0) return;
 
     Realm *r = world.realmByIdent(from);
@@ -112,17 +94,13 @@ void showRealm(World &world, const std::vector<std::string> &arguments) {
 }
 
 void showSpecies(World &world, const std::vector<std::string> &arguments) {
-    std::string fromStr;
-    std::cout << "species#> ";
-    std::getline(std::cin, fromStr);
-    if (fromStr.empty()) return;
-    int from = strToInt(fromStr);
+    int from = strToInt(arguments[1]);
     Species *s = nullptr;
     if (from >= 0) {
         s = world.speciesByIdent(from);
     }
     if (!s) {
-        std::cout << "Invalid species " << fromStr << ".\n\n";
+        std::cout << "Invalid species " << arguments[1] << ".\n\n";
         return;
     }
 
@@ -173,7 +151,7 @@ struct CommandInfo {
 std::vector<CommandInfo> commands{
     { "checknames",    checkNames,      1, 1, "",
                                               "Check length of names does not exceed maximum." },
-    { "dist",          findDistance,    1, 1, "(from) (to)",
+    { "dist",          findDistance,    3, 3, "(from) (to)",
                                               "Finds the minimum number of transits required to travel between two realms." },
     { "help",          showHelp,        1, 2, "[command]",
                                               "Display list of valid commands. If a command is specified, displays information on command usage instead." },
@@ -181,15 +159,15 @@ std::vector<CommandInfo> commands{
                                               "Displays list of all factions, realms, or species." },
     { "near",          findNear,        3, 3, "(to realm) (within distance)",
                                               "Display a list of realms within a certain distance of the one specified." },
-    { "path",          findPath,        1, 1, "(from) (to)",
+    { "path",          findPath,        3, 3, "(from) (to)",
                                               "Finds the shortest path between two realms." },
     { "quit",          nullptr,         1, 1, "",
                                               "Exit program." },
     { "q",             nullptr,         1, 1, "",
                                               "Exit program." },
-    { "realm",         showRealm,       1, 1, "(realm id)",
+    { "realm",         showRealm,       2, 2, "(realm id)",
                                               "Displays realm information." },
-    { "species",       showSpecies,     1, 1, "(species id)",
+    { "species",       showSpecies,     2, 2, "(species id)",
                                               "Displays species information" },
     { "svg",           makeSVG,         1, 1, "",
                                               "Outputs map of all realm connects as an SVG file." },
