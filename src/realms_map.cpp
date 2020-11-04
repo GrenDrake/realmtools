@@ -64,7 +64,7 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
     for (Realm *r : world.realms) {
         int realX = (r->x + xOffset * 2) * scale;
         int realY = (r->y + yOffset) * scale;
-        if (r->species >= 0) {
+        if (r->speciesHome >= 0) {
             svgMap << "\t<circle cx=\"" << realX << "\" cy=\"" << realY;
             svgMap << "\" r=\"" << (r->factionHome ? 10 : 7);
             svgMap << "\" fill=\"#FF00FF\" />\n" << std::dec;
@@ -82,8 +82,8 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
         svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY - 7;
         svgMap << "\" text-anchor=\"middle\" font-size=\"smaller\">";
         svgMap << r->name << " [" << r->ident << "]</text>\n";
-        if (r->species >= 0) {
-            Species *species = world.speciesByIdent(r->species);
+        if (r->speciesHome >= 0) {
+            Species *species = world.speciesByIdent(r->speciesHome);
             if (species) {
                 svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY + 7;
                 svgMap << "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" font-size=\"smaller\">";

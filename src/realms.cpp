@@ -83,11 +83,11 @@ void showRealm(World &world, const std::vector<std::string> &arguments) {
     std::cout << "Biome: " << r->biome[0];
     if (r->biome[1] != Biome::None) std::cout << " / " << r->biome[1];
     std::cout << "\n";
-    std::cout << "Native species: ";
-    const Species *s = world.speciesByIdent(r->species);
-    if (s)  std::cout << s->name;
-    else    std::cout << "BAD_SPECIES";
-    std::cout << " [" << r->species << "]\n";
+    const Species *s = world.speciesByIdent(r->speciesHome);
+    if (s) {
+        std::cout << "Home realm for species: " << s->name;
+        std::cout << " [" << r->speciesHome << "]\n";
+    }
 
     std::cout << "\n";
 }

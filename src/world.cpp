@@ -80,7 +80,7 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(3) << r->faction << " | ";
         realmList << r->factionHome << " | ";
         realmList << std::setw(4) << r->populationDensity << " | ";
-        realmList << std::setw(4) << r->species << " | ";
+        realmList << std::setw(4) << r->speciesHome << " | ";
         realmList << std::setw(4) << static_cast<int>(r->biome[0]) << " | ";
         realmList << std::setw(4) << static_cast<int>(r->biome[1]) << " | ";
         bool first = true;
@@ -125,7 +125,7 @@ bool World::readFromFile(const std::string &filename) {
             r->faction      = strToInt(parts[5]);
             r->factionHome  = strToInt(parts[6]);
             r->populationDensity = strToInt(parts[7]);
-            r->species      = strToInt(parts[8]);
+            r->speciesHome  = strToInt(parts[8]);
             r->biome[0]     = static_cast<Biome>(strToInt(parts[9]));
             r->biome[1]     = static_cast<Biome>(strToInt(parts[10]));
             r->name         = parts[12];

@@ -160,7 +160,7 @@ int main() {
         r->name = makeName();
         r->faction = -1;
         r->factionHome = false;
-        r->species = -1;
+        r->speciesHome = -1;
         r->diameter = 412 + rngNext(208);
         r->populationDensity = 15 + rngNext(70);
         r->biome[0] = static_cast<Biome>(rngNext(static_cast<int>(Biome::BiomeCount)));
@@ -320,7 +320,7 @@ int main() {
         do {
             ++iterations;
             home = rngVector(world.realms);
-            if (home->species >= 0) home = nullptr;
+            if (home->speciesHome >= 0) home = nullptr;
             else {
                 for (Species *s2 : world.species) {
                     if (s2->homeRealm < 0) continue;
@@ -335,7 +335,7 @@ int main() {
         if (home) {
             Species *s = makeSpecies();
             world.species.push_back(s);
-            home->species = s->ident;
+            home->speciesHome = s->ident;
             s->homeRealm = home->ident;
         } else {
             std::cerr << "\tSpecies generation terminated -- could not place.\n";

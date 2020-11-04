@@ -43,7 +43,7 @@ struct Realm {
     int ident;
     std::string name;
     int x, y;
-    int species;
+    int speciesHome;
     Biome biome[2];
     std::vector<Link> links;
     int diameter; // kilometres

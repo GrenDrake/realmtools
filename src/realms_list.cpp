@@ -19,15 +19,15 @@ bool realmNameSort(const Realm *l, const Realm *r) {
     return l->name < r->name;
 }
 bool realmSpeciesSort(const Realm *l, const Realm *r) {
-    if (l->species <= 0 && r->species <= 0) {
+    if (l->speciesHome <= 0 && r->speciesHome <= 0) {
         return realmNameSort(l, r);
     }
 
-    if (l->species > 0 && r->species <= 0) return false;
-    if (l->species <= 0 && r->species > 0) return true;
+    if (l->speciesHome > 0 && r->speciesHome <= 0) return false;
+    if (l->speciesHome <= 0 && r->speciesHome > 0) return true;
 
-    Species *ls = w->speciesByIdent(l->species);
-    Species *rs = w->speciesByIdent(r->species);
+    Species *ls = w->speciesByIdent(l->speciesHome);
+    Species *rs = w->speciesByIdent(r->speciesHome);
     return ls->name < rs->name;
 }
 bool realmFactionSort(const Realm *l, const Realm *r) {
@@ -63,7 +63,7 @@ void listRealms(World &world, const std::vector<std::string> &arguments) {
 
     for (const Realm *s : sorted) {
         const Faction *fac = world.factionByIdent(s->faction);
-        const Species *spc = world.speciesByIdent(s->species);
+        const Species *spc = world.speciesByIdent(s->speciesHome);
 
         std::cout << std::left;
         std::cout << std::setw(3) << s->ident << "  ";
@@ -83,10 +83,10 @@ void listRealms(World &world, const std::vector<std::string> &arguments) {
         std::stringstream spcStr;
         if (spc) {
             spcStr << spc->name << " [" << spc->ident << "]";
-        } else if (s->species == -1) {
+        } else if (s->speciesHome == -1) {
             spcStr << "no native species";
         } else {
-            spcStr << "BAD SPECIES [" << s->species << "]";
+            spcStr << "BAD SPECIES [" << s->speciesHome << "]";
         }
 
         std::cout << std::setw(24) << facStr.str() << "  " << std::setw(24) << spcStr.str() << '\n';
@@ -108,8 +108,8 @@ void listFactions(World &world, const std::vector<std::string> &arguments) {
     }
 
      for (const Realm *r : world.realms) {
-        ++frequency[r->species];
-        population[r->species] += r->population();
+        ++frequency[r->speciesHome];
+        population[r->speciesHome] += r->population();
     }
 
     std::vector<Faction*> sorted = world.factions;
@@ -154,8 +154,8 @@ void listSpecies(World &world, const std::vector<std::string> &arguments) {
     }
 
      for (const Realm *r : world.realms) {
-        ++frequency[r->species];
-        population[r->species] += r->population();
+        ++frequency[r->speciesHome];
+        population[r->speciesHome] += r->population();
     }
 
     std::vector<Species*> sorted = world.species;
