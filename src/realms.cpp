@@ -43,7 +43,11 @@ void findDistance(World &world, const std::vector<std::string> &arguments) {
     std::cout << world.findDistance(from, to) << "\n\n";
 }
 
-
+bool realmNearSort(const Realm *l, const Realm *r) {
+    if (l->work2 < r->work2) return true;
+    if (l->work2 > r->work2) return false;
+    return l->name < r->name;
+}
 void findNear(World &world, const std::vector<std::string> &arguments) {
     int to = strToInt(arguments[1]);
     int dist = strToInt(arguments[2]);
@@ -52,12 +56,26 @@ void findNear(World &world, const std::vector<std::string> &arguments) {
         return;
     }
 
-    for (const Realm *r : world.realms) {
+    std::vector<Realm*> work;
+    for (Realm *r : world.realms) {
         if (r->ident == to) continue;
         int d = world.findDistance(to, r->ident);
         if (d <= dist) {
-            std::cout << r->name << "\n";
+            r->work2 = d;
+            work.push_back(r);
         }
+    }
+    std::sort(work.begin(), work.end(), realmNearSort);
+
+    std::cout << "     REALM                   DIST  HR  PRIMARY SPECIES\n";
+    for (const Realm *r : work) {
+        Species *s = world.speciesByIdent(r->primarySpecies);
+        std::cout << std::setw(3) << r->ident << ": ";
+        std::cout << std::left << std::setw(MAX_NAME_LENGTH) << r->name << std::right << "    ";
+        std::cout << std::setw(4) << r->work2 << "  ";
+        if (r->speciesHome) std::cout << 'X';
+        else                std::cout << ' ';
+        std::cout << "   " << s->name << " [" << s->ident << "]\n";
     }
     std::cout << '\n';
 }
@@ -109,7 +127,6 @@ void showSpecies(World &world, const std::vector<std::string> &arguments) {
     std::cout << "Height: " << s->height << " cm\n";
     std::cout << "Stance: " << s->stance << "\n";
     std::cout << "Wings: " << s->wings << "\n";
-    if (s->isBeastFolk) std::cout << "Beastfolk: Yes\n";
     std::cout << '\n';
 }
 
@@ -137,6 +154,20 @@ void checkNames(World &world, const std::vector<std::string> &arguments) {
             std::cout << '\t' << std::setw(3) << r->ident << "  " << r->name << '\n';
         }
     }
+
+    // check species abbreviations are unique
+    std::cout << "\nSpecies Abbreviations:\n" << std::left;
+    for (Species *a : world.species) {
+        for (Species *b : world.species) {
+            // if (a == b) continue;
+            if (a->ident >= b->ident) continue;
+            if (a->abbrev == b->abbrev) {
+                std::cout << '\t';
+                std::cout << std::setw(MAX_NAME_LENGTH) << a->name << " <> ";
+                std::cout << std::setw(MAX_NAME_LENGTH) << b->name << "\n";
+            }
+        }
+    }
     std::cout << '\n' << std::right;
 }
 
@@ -155,7 +186,7 @@ std::vector<CommandInfo> commands{
                                               "Finds the minimum number of transits required to travel between two realms." },
     { "help",          showHelp,        1, 2, "[command]",
                                               "Display list of valid commands. If a command is specified, displays information on command usage instead." },
-    { "list",          listDispatcher,  2, 2, "(factions|realms|species)",
+    { "list",          listDispatcher,  2, 3, "(factions|realms|species) [sort by]",
                                               "Displays list of all factions, realms, or species." },
     { "near",          findNear,        3, 3, "(to realm) (within distance)",
                                               "Display a list of realms within a certain distance of the one specified." },

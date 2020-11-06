@@ -63,7 +63,7 @@ void listRealms(World &world, const std::vector<std::string> &arguments) {
 
     for (const Realm *s : sorted) {
         const Faction *fac = world.factionByIdent(s->faction);
-        const Species *spc = world.speciesByIdent(s->speciesHome);
+        const Species *spc = world.speciesByIdent(s->primarySpecies);
 
         std::cout << std::left;
         std::cout << std::setw(3) << s->ident << "  ";
@@ -83,10 +83,8 @@ void listRealms(World &world, const std::vector<std::string> &arguments) {
         std::stringstream spcStr;
         if (spc) {
             spcStr << spc->name << " [" << spc->ident << "]";
-        } else if (s->speciesHome == -1) {
-            spcStr << "no native species";
         } else {
-            spcStr << "BAD SPECIES [" << s->speciesHome << "]";
+            spcStr << "BAD SPECIES [" << s->primarySpecies << "]";
         }
 
         std::cout << std::setw(24) << facStr.str() << "  " << std::setw(24) << spcStr.str() << '\n';

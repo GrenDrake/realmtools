@@ -6,6 +6,35 @@ std::string makeNameCore(int depth);
 
 std::vector<std::string> usedNames;
 
+std::vector<Colour> colourList = {
+    {240,163,255},
+    {0,117,220},
+    {153,63,0},
+    {76,0,92},
+    {25,25,25},
+    {0,92,49},
+    {43,206,72},
+    {255,204,153},
+    {128,128,128},
+    {148,255,181},
+    {143,124,0},
+    {157,204,0},
+    {194,0,136},
+    {0,51,128},
+    {255,164,5},
+    {255,168,187},
+    {66,102,0},
+    {255,0,16},
+    {94,241,242},
+    {0,153,143},
+    {224,255,102},
+    {116,10,255},
+    {153,0,0},
+    {255,255,128},
+    {255,255,0},
+    {255,80,5}
+};
+
 std::vector<int> wordCount{
     1, 1, 1, 2, 2, 2
 };
@@ -70,14 +99,18 @@ std::vector<Wings> wingList{
 
 Species* makeSpecies() {
     static int identCounter = 0;
+    static unsigned nextColour = 0;
     Species *s = new Species;
     s->ident = identCounter;
     ++identCounter;
     s->name = makeName();
+    s->abbrev = s->name.substr(0, 2);
     s->height = 50 + rngNext(150);
-    s->isBeastFolk = rngNext(13) == 1;
     s->stance = rngVector(stanceList);
     s->homeRealm = -1;
+    s->colour = colourList[nextColour];
+    ++nextColour;
+    if (nextColour >= colourList.size()) nextColour = 0;
     if (s->stance == Stance::Taur)  s->wings = Wings::None;
     else                            s->wings = rngVector(wingList);
     return s;

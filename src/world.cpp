@@ -66,9 +66,12 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(3) << s->ident << " | ";
         realmList << std::setw(2) << static_cast<int>(s->stance) << " | ";
         realmList << std::setw(2) << static_cast<int>(s->wings) << " | ";
-        realmList << s->isBeastFolk << " | ";
         realmList << std::setw(3) << s->height << " | ";
         realmList << std::setw(4) << s->homeRealm << " | ";
+        realmList << std::setw(3) << s->colour.r << " | ";
+        realmList << std::setw(3) << s->colour.g << " | ";
+        realmList << std::setw(3) << s->colour.b << " | ";
+        realmList << s->abbrev << " | ";
         realmList << s->name << "\n";
     }
 
@@ -81,6 +84,7 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << r->factionHome << " | ";
         realmList << std::setw(4) << r->populationDensity << " | ";
         realmList << std::setw(4) << r->speciesHome << " | ";
+        realmList << std::setw(4) << r->primarySpecies << " | ";
         realmList << std::setw(4) << static_cast<int>(r->biome[0]) << " | ";
         realmList << std::setw(4) << static_cast<int>(r->biome[1]) << " | ";
         bool first = true;
@@ -112,8 +116,8 @@ bool World::readFromFile(const std::string &filename) {
         if (parts.empty()) continue;
 
         if (parts[0] == "R") {
-            if (parts.size() != 13) {
-                std::cerr << lineNo << ": realm has wrong number of data items.\n";
+            if (parts.size() != 14) {
+                std::cerr << lineNo << ": realm has wrong number of data items (found " << parts.size() << ").\n";
                 continue;
             }
 
@@ -126,13 +130,14 @@ bool World::readFromFile(const std::string &filename) {
             r->factionHome  = strToInt(parts[6]);
             r->populationDensity = strToInt(parts[7]);
             r->speciesHome  = strToInt(parts[8]);
-            r->biome[0]     = static_cast<Biome>(strToInt(parts[9]));
-            r->biome[1]     = static_cast<Biome>(strToInt(parts[10]));
-            r->name         = parts[12];
+            r->primarySpecies = strToInt(parts[9]);
+            r->biome[0]     = static_cast<Biome>(strToInt(parts[10]));
+            r->biome[1]     = static_cast<Biome>(strToInt(parts[11]));
+            r->name         = parts[13];
             if (r->x > newMaxX) newMaxX = r->x;
             if (r->y > newMaxY) newMaxY = r->y;
 
-            auto links = explode(parts[11], ';');
+            auto links = explode(parts[12], ';');
             for (const std::string &s : links) {
                 int to = strToInt(s);
                 if (to < 0) continue;
@@ -157,7 +162,7 @@ bool World::readFromFile(const std::string &filename) {
             newFactions.push_back(f);
 
         } else if (parts[0] == "S") {
-            if (parts.size() != 8) {
+            if (parts.size() != 11) {
                 std::cerr << lineNo << ": species has wrong number of data items.\n";
                 continue;
             }
@@ -166,10 +171,13 @@ bool World::readFromFile(const std::string &filename) {
             s->ident        = strToInt(parts[1]);
             s->stance       = static_cast<Stance>(strToInt(parts[2]));
             s->wings        = static_cast<Wings>(strToInt(parts[3]));
-            s->isBeastFolk  = strToInt(parts[4]);
-            s->height       = strToInt(parts[5]);
-            s->homeRealm    = strToInt(parts[6]);
-            s->name         = parts[7];
+            s->height       = strToInt(parts[4]);
+            s->homeRealm    = strToInt(parts[5]);
+            s->colour.r     = strToInt(parts[6]);
+            s->colour.g     = strToInt(parts[7]);
+            s->colour.b     = strToInt(parts[8]);
+            s->abbrev       = parts[9];
+            s->name         = parts[10];
             newSpecies.push_back(s);
 
         } else {

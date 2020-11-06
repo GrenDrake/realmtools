@@ -7,6 +7,10 @@
 
 const int MAX_NAME_LENGTH = 20;
 
+struct Colour {
+    int r, g, b;
+};
+
 enum class Stance {
     Biped, Quad, Taur, Thero,
     Count
@@ -19,12 +23,13 @@ enum class Wings {
 struct Species {
     int ident;
     std::string name;
+    std::string abbrev;
     Stance stance;
     Wings wings;
-    bool isBeastFolk;
     int height; // centimeters
     std::string skinType;
     int homeRealm;
+    Colour colour;
 };
 
 enum class Biome {
@@ -43,14 +48,15 @@ struct Realm {
     int ident;
     std::string name;
     int x, y;
-    int speciesHome;
+    int primarySpecies;
+    bool speciesHome;
     Biome biome[2];
     std::vector<Link> links;
     int diameter; // kilometres
     int populationDensity;
     int faction;
     bool factionHome;
-    int work1;
+    int work1, work2;
 
     int area() const;
     int population() const;

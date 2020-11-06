@@ -13,18 +13,15 @@
 #include "realms.h"
 
 const int MAX_FACTIONS = 20;
-const int MAX_HEIGHT = 50;
-const int MAX_WIDTH = 90;
+const int MAX_WIDTH = 70;
+const int MAX_HEIGHT = MAX_WIDTH * 2 / 3;
 const int MAX_ITERATIONS = 100;
 const int MAX_REALMS = 1600;
 const int RNG_SEED = 234;
 const int MAX_LINK_DIST = 10;
-const int SPECIES_MIN_DIST = 4;
+const int SPECIES_MIN_DIST = 3;
 
-struct Color {
-    int r, g, b;
-};
-std::vector<Color> factionColours = {
+std::vector<Colour> factionColours = {
     {240,163,255},
     {0,117,220},
     {153,63,0},
@@ -160,7 +157,8 @@ int main() {
         r->name = makeName();
         r->faction = -1;
         r->factionHome = false;
-        r->speciesHome = -1;
+        r->primarySpecies = -1;
+        r->speciesHome = false;
         r->diameter = 412 + rngNext(208);
         r->populationDensity = 15 + rngNext(70);
         r->biome[0] = static_cast<Biome>(rngNext(static_cast<int>(Biome::BiomeCount)));
@@ -320,7 +318,7 @@ int main() {
         do {
             ++iterations;
             home = rngVector(world.realms);
-            if (home->speciesHome >= 0) home = nullptr;
+            if (home->speciesHome) home = nullptr;
             else {
                 for (Species *s2 : world.species) {
                     if (s2->homeRealm < 0) continue;
@@ -335,13 +333,20 @@ int main() {
         if (home) {
             Species *s = makeSpecies();
             world.species.push_back(s);
-            home->speciesHome = s->ident;
+            home->speciesHome = true;
+            home->primarySpecies = s->ident;
             s->homeRealm = home->ident;
         } else {
             std::cerr << "\tSpecies generation terminated -- could not place.\n";
             std::cerr << "\tGenerated " << world.species.size() << " species.\n";
         }
     } while(home);
+
+    std::cerr << "Assigning primary species...\n";
+    for (Realm *r : world.realms) {
+        if (r->primarySpecies >= 0) continue;
+        r->primarySpecies = rngNext(world.species.size());
+    }
 
     std::cerr << "Saving data to file...\n";
     world.writeToFile("realms.txt");

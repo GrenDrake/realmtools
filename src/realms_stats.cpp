@@ -16,7 +16,6 @@ const double PI = 3.14159265358979323846;
 
 void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     int speciesCount = world.species.size();
-    int beastFolk = 0;
 
     std::map<Stance, int> stances;
     std::map<Wings, int> wings;
@@ -28,7 +27,6 @@ void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     for (const Species *s : world.species) {
         ++stances[s->stance];
         ++wings[s->wings];
-        if (s->isBeastFolk) ++beastFolk;
 
         if (s->height < minHeight) minHeight = s->height;
         if (s->height > maxHeight) maxHeight = s->height;
@@ -43,8 +41,6 @@ void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     std::cout << "No Wings: " << wings[Wings::None]   << " (" << percent(wings[Wings::None],     speciesCount) << "%)\n";
     std::cout << "Back Wings: " << wings[Wings::Back] << " (" << percent(wings[Wings::Back],     speciesCount) << "%)\n";
     std::cout << "Arm Wings: " << wings[Wings::Arm]   << " (" << percent(wings[Wings::Arm],      speciesCount) << "%)\n";
-    std::cout << '\n';
-    std::cout << "Beastfolk: " << beastFolk   << " (" << percent(beastFolk,     speciesCount) << "%)\n";
     std::cout << '\n';
     std::cout << "Max Height: " << maxHeight << " cm\n";
     std::cout << "Min Height: " << minHeight << " cm\n";
