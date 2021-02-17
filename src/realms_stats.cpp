@@ -52,6 +52,8 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     int realmCount = world.realms.size();
 
     std::map<Biome, int> biomes;
+    std::map<TechLevel, int> tech;
+    std::map<MagicLevel, int> magic;
 
     int maxDiameter = 0;
     int minDiameter = 999999;
@@ -68,6 +70,8 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
 
     for (const Realm *r : world.realms) {
         ++biomes[r->biome];
+        ++tech[r->techLevel];
+        ++magic[r->magicLevel];
 
         if (r->links.size() > maxLinks) maxLinks = r->links.size();
         totalLinks += r->links.size();
@@ -91,6 +95,20 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
         Biome b = static_cast<Biome>(i);
         std::cout << std::setw(10) << std::left << b << "   " << std::right;
         std::cout << std::setw(2) << biomes[b] << "   " << std::setw(3) << percent(biomes[b], realmCount) << "%\n";
+    }
+
+    std::cout << '\n';
+    std::cout << "Level         #      %\n";
+    std::cout << "-----------------------\n";
+    for (int i = 0; i < static_cast<int>(TechLevel::Count); ++i) {
+        TechLevel b = static_cast<TechLevel>(i);
+        std::cout << std::setw(10) << std::left << b << "   " << std::right;
+        std::cout << std::setw(2) << tech[b] << "   " << std::setw(3) << percent(tech[b], realmCount) << "%\n";
+    }
+    for (int i = 0; i < static_cast<int>(MagicLevel::Count); ++i) {
+        MagicLevel b = static_cast<MagicLevel>(i);
+        std::cout << std::setw(10) << std::left << b << "   " << std::right;
+        std::cout << std::setw(2) << magic[b] << "   " << std::setw(3) << percent(magic[b], realmCount) << "%\n";
     }
 
     std::cout << "\nMost Links: " << maxLinks << "\n";

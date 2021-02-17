@@ -39,6 +39,13 @@ enum class Biome {
     None = 9999,
 };
 
+enum class MagicLevel {
+    NoMagic, SemiMagic, FullMagic, Count
+};
+enum class TechLevel {
+    NoTech, SemiTech, FullTech, Count
+};
+
 struct Link {
     int linkTo;
 };
@@ -55,6 +62,8 @@ struct Realm {
     int populationDensity;
     int faction;
     bool factionHome;
+    MagicLevel magicLevel;
+    TechLevel techLevel;
     int work1, work2;
 
     int area() const;
@@ -94,6 +103,8 @@ struct World {
 };
 
 std::ostream& operator<<(std::ostream &out, const Biome &biome);
+std::ostream& operator<<(std::ostream &out, const TechLevel &level);
+std::ostream& operator<<(std::ostream &out, const MagicLevel &level);
 std::ostream& operator<<(std::ostream &out, const Stance &stance);
 std::ostream& operator<<(std::ostream &out, const Wings &wing);
 

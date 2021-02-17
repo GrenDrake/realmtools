@@ -174,6 +174,8 @@ void showRealm(World &world, const std::vector<std::string> &arguments) {
     std::cout << "Pop. Density: " << r->populationDensity << " per sq mi.\n";
     std::cout << "Population: " << intToString(r->population()) << "\n";
     std::cout << "Biome: " << r->biome << "\n";
+    std::cout << "Tech Level: " << r->techLevel << "\n";
+    std::cout << "Magic Level: " << r->magicLevel << "\n";
     const Species *s = world.speciesByIdent(r->speciesHome);
     if (s) {
         std::cout << "Home realm for species: " << s->name;

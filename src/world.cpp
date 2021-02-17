@@ -85,7 +85,9 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(4) << r->populationDensity << " | ";
         realmList << std::setw(4) << r->speciesHome << " | ";
         realmList << std::setw(4) << r->primarySpecies << " | ";
-        realmList << std::setw(4) << static_cast<int>(r->biome) << " | ";
+        realmList << std::setw(1) << static_cast<int>(r->magicLevel) << " | ";
+        realmList << std::setw(1) << static_cast<int>(r->techLevel) << " | ";
+        realmList << std::setw(1) << static_cast<int>(r->biome) << " | ";
         bool first = true;
         for (unsigned i = 0; i < r->links.size(); ++i) {
             if (first) first = false;
@@ -115,7 +117,7 @@ bool World::readFromFile(const std::string &filename) {
         if (parts.empty()) continue;
 
         if (parts[0] == "R") {
-            if (parts.size() != 13) {
+            if (parts.size() != 15) {
                 std::cerr << lineNo << ": realm has wrong number of data items (found " << parts.size() << ").\n";
                 continue;
             }
@@ -130,12 +132,14 @@ bool World::readFromFile(const std::string &filename) {
             r->populationDensity = strToInt(parts[7]);
             r->speciesHome  = strToInt(parts[8]);
             r->primarySpecies = strToInt(parts[9]);
-            r->biome        = static_cast<Biome>(strToInt(parts[10]));
-            r->name         = parts[13];
+            r->magicLevel   = static_cast<MagicLevel>(strToInt(parts[10]));
+            r->techLevel    = static_cast<TechLevel>(strToInt(parts[11]));
+            r->biome        = static_cast<Biome>(strToInt(parts[12]));
+            r->name         = parts[14];
             if (r->x > newMaxX) newMaxX = r->x;
             if (r->y > newMaxY) newMaxY = r->y;
 
-            auto links = explode(parts[12], ';');
+            auto links = explode(parts[13], ';');
             for (const std::string &s : links) {
                 int to = strToInt(s);
                 if (to < 0) continue;
@@ -345,6 +349,40 @@ std::ostream& operator<<(std::ostream &out, const Biome &biome) {
             break;
         default:
             out << "bad biome";
+    }
+    return out;
+}
+
+std::ostream& operator<<(std::ostream &out, const TechLevel &level) {
+    switch (level) {
+        case TechLevel::NoTech:
+            out << "no tech";
+            break;
+        case TechLevel::SemiTech:
+            out << "semi tech";
+            break;
+        case TechLevel::FullTech:
+            out << "full tech";
+            break;
+        default:
+            out << "bad tech level";
+    }
+    return out;
+}
+
+std::ostream& operator<<(std::ostream &out, const MagicLevel &level) {
+    switch (level) {
+        case MagicLevel::NoMagic:
+            out << "no magic";
+            break;
+        case MagicLevel::SemiMagic:
+            out << "semi magic";
+            break;
+        case MagicLevel::FullMagic:
+            out << "full magic";
+            break;
+        default:
+            out << "bad magic level";
     }
     return out;
 }
