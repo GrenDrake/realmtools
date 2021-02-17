@@ -80,9 +80,83 @@ void findNear(World &world, const std::vector<std::string> &arguments) {
     std::cout << '\n';
 }
 
+void findNearXY(World &world, const std::vector<std::string> &arguments) {
+    int X = strToInt(arguments[1]);
+    int Y = strToInt(arguments[2]);
+    int count = 1;
+    if (arguments.size() > 3) count = strToInt(arguments[3]);
+    if (X < 0 || Y < 1 || count < 1) {
+        std::cout << "Invalid argument.\n\n";
+        return;
+    }
+
+    std::vector<Realm*> work;
+    for (Realm *r : world.realms) {
+        r->work2 = distance(r->x, r->y, X, Y) * 1000;
+        work.push_back(r);
+    }
+    std::sort(work.begin(), work.end(), realmNearSort);
+
+    std::cout << "     REALM                   DIST  X   Y   HR  PRIMARY SPECIES\n";
+    for (unsigned i = 0; i < work.size() && i < count; ++i) {
+        const Realm *r = work[i];
+        Species *s = world.speciesByIdent(r->primarySpecies);
+        std::cout << std::setw(3) << r->ident << ": ";
+        std::cout << std::left << std::setw(MAX_NAME_LENGTH) << r->name << std::right;
+        std::cout << std::setw(8) << r->work2 / 1000.0 << "  ";
+        std::cout << std::left << std::setw(4) << r->x;
+        std::cout << std::setw(4) << r->y << std::right;
+        if (r->speciesHome) std::cout << 'X';
+        else                std::cout << ' ';
+        std::cout << "   " << s->name << " [" << s->ident << "]\n";
+    }
+    std::cout << '\n';
+}
+
+void randomRealm(World &world, const std::vector<std::string> &arguments) {
+    int count = 1;
+    if (arguments.size() > 1) count = strToInt(arguments[1]);
+    if (count < 1) {
+        std::cout << "Invalid argument.\n\n";
+        return;
+    }
+
+    if (count > world.realms.size()) {
+        std::cout << "Selection count cannot be greater than realm count. (Asked for ";
+        std::cout << count << " realms, but only " << world.realms.size() << " exist.)\n\n";
+        return;
+    }
+
+    std::vector<const Realm*> work;
+    while (work.size() < count) {
+        int rng = rngNext(world.realms.size());
+        Realm *s = world.realms[rng];
+        bool isDup = false;
+        for (const Realm *r : work) {
+            if (r == s) isDup = true;
+            break;
+        }
+        if (!isDup) work.push_back(s);
+    }
+
+    std::cout << "     REALM                   HR  PRIMARY SPECIES\n";
+    for (const Realm *r : work) {
+        Species *s = world.speciesByIdent(r->primarySpecies);
+        std::cout << std::setw(3) << r->ident << ": ";
+        std::cout << std::left << std::setw(MAX_NAME_LENGTH) << r->name << std::right << "    ";
+        if (r->speciesHome) std::cout << 'X';
+        else                std::cout << ' ';
+        std::cout << "   " << s->name << " [" << s->ident << "]\n";
+    }
+    std::cout << '\n';
+}
+
 void showRealm(World &world, const std::vector<std::string> &arguments) {
     int from = strToInt(arguments[1]);
-    if (from < 0) return;
+    if (from < 0) {
+        std::cout << "Invalid argument.\n\n";
+        return;
+    }
 
     Realm *r = world.realmByIdent(from);
     if (!r) {
@@ -190,12 +264,16 @@ std::vector<CommandInfo> commands{
                                               "Displays list of all factions, realms, or species." },
     { "near",          findNear,        3, 3, "(to realm) (within distance)",
                                               "Display a list of realms within a certain distance of the one specified." },
+    { "nearxy",        findNearXY,      3, 4, "(x) (y) [count]",
+                                              "Display up to count realms closest to the provided visual XY coordinates. If not specified, count is 1." },
     { "path",          findPath,        3, 3, "(from) (to)",
                                               "Finds the shortest path between two realms." },
     { "quit",          nullptr,         1, 1, "",
                                               "Exit program." },
     { "q",             nullptr,         1, 1, "",
                                               "Exit program." },
+    { "random",        randomRealm,     1, 2, "[count]",
+                                              "Select one or more random realms. If unspecified, count is 1." },
     { "realm",         showRealm,       2, 2, "(realm id)",
                                               "Displays realm information." },
     { "species",       showSpecies,     2, 2, "(species id)",
@@ -251,6 +329,7 @@ bool processCommand(World &world, std::string commandText) {
 }
 
 int main(int argc, char *argv[]) {
+    rngInit(0);
     World world;
     if (!world.readFromFile("realms.txt")) {
         std::cerr << "Failed to read realms data.\n";

@@ -1,4 +1,5 @@
 #include <cmath>
+#include <ctime>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -103,6 +104,9 @@ std::string intToString(int number) {
 }
 
 void rngInit(int seed) {
+    if (seed == 0) {
+        seed = time(nullptr);
+    }
     srand(seed);
 }
 
