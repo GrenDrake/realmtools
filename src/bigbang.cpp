@@ -12,6 +12,8 @@
 
 #include "realms.h"
 
+extern std::vector<const char*> realmNames;
+
 const int MAX_FACTIONS = 20;
 const int MAX_WIDTH = 70;
 const int MAX_HEIGHT = MAX_WIDTH * 2 / 3;
@@ -153,8 +155,14 @@ int main() {
     if (world.realms.size() <= 0) return 1;
 
     std::cerr << "Assigning realm details...\n";
+    int nextRealmName = 0;
     for (Realm *r : world.realms) {
-        r->name = makeName();
+        if (nextRealmName < realmNames.size()) {
+            r->name = realmNames[nextRealmName];
+            ++nextRealmName;
+        } else {
+            r->name = makeName();
+        }
         r->faction = -1;
         r->factionHome = false;
         r->primarySpecies = -1;

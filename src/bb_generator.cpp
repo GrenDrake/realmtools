@@ -2,6 +2,10 @@
 #include <vector>
 #include "realms.h"
 
+// default data from data.cpp
+extern std::vector<Species> sapientSpecies;
+
+
 std::string makeNameCore(int depth);
 
 std::vector<std::string> usedNames;
@@ -99,19 +103,30 @@ std::vector<Wings> wingList{
 
 Species* makeSpecies() {
     static int identCounter = 0;
+    static int nextPremade = 0;
     static unsigned nextColour = 0;
     Species *s = new Species;
     s->ident = identCounter;
     ++identCounter;
-    s->name = makeName();
-    s->abbrev = s->name.substr(0, 2);
-    s->height = 50 + rngNext(150);
-    s->stance = rngVector(stanceList);
+    if (nextPremade < sapientSpecies.size()) {
+        const Species &src = sapientSpecies[nextPremade];
+        s->name = src.name;
+        s->abbrev = src.abbrev;
+        s->height = src.height;
+        s->stance = src.stance;
+        s->wings = src.wings;
+        ++nextPremade;
+    } else {
+        s->name = makeName();
+        s->abbrev = s->name.substr(0, 2);
+        s->height = 50 + rngNext(150);
+        s->stance = rngVector(stanceList);
+        if (s->stance == Stance::Taur)  s->wings = Wings::None;
+        else                            s->wings = rngVector(wingList);
+    }
     s->homeRealm = -1;
     s->colour = colourList[nextColour];
     ++nextColour;
     if (nextColour >= colourList.size()) nextColour = 0;
-    if (s->stance == Stance::Taur)  s->wings = Wings::None;
-    else                            s->wings = rngVector(wingList);
     return s;
 }
