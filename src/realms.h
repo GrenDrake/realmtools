@@ -27,7 +27,6 @@ struct Species {
     Stance stance;
     Wings wings;
     int height; // centimeters
-    std::string skinType;
     int homeRealm;
     Colour colour;
 };
