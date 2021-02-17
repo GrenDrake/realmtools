@@ -161,10 +161,7 @@ int main() {
         r->speciesHome = false;
         r->diameter = 412 + rngNext(208);
         r->populationDensity = 15 + rngNext(70);
-        r->biome[0] = static_cast<Biome>(rngNext(static_cast<int>(Biome::BiomeCount)));
-        if (r->biome[0] == Biome::Mountain || rngNext(3) == 1) {
-            r->biome[1] = static_cast<Biome>(rngNext(static_cast<int>(Biome::Mountain)));
-        } else r->biome[1] = Biome::None;
+        r->biome = static_cast<Biome>(rngNext(static_cast<int>(Biome::BiomeCount)));
     }
 
 

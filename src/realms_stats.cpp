@@ -51,10 +51,7 @@ void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
 void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     int realmCount = world.realms.size();
 
-    std::map<Biome, int> biome1;
-    std::map<Biome, int> biome2;
-    std::map<Biome, int> biomeDual;
-    int biomeCount = 0;
+    std::map<Biome, int> biomes;
 
     int maxDiameter = 0;
     int minDiameter = 999999;
@@ -70,13 +67,7 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     int totalLinks = 0;
 
     for (const Realm *r : world.realms) {
-        ++biome1[r->biome[0]];
-        ++biome2[r->biome[1]];
-        ++biomeDual[r->biome[0]];
-        if (r->biome[1] != Biome::None) {
-            ++biomeDual[r->biome[1]];
-            ++biomeCount;
-        }
+        ++biomes[r->biome];
 
         if (r->links.size() > maxLinks) maxLinks = r->links.size();
         totalLinks += r->links.size();
@@ -94,18 +85,12 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     }
 
     std::cout << '\n';
-    std::cout << "Biome      |  Primary  | Secondary | Combined\n";
-    std::cout << "-----------+-----------+-----------+----------\n";
+    std::cout << "Biome         #      %\n";
+    std::cout << "-----------------------\n";
     for (int i = 0; i < static_cast<int>(Biome::BiomeCount); ++i) {
         Biome b = static_cast<Biome>(i);
-        std::cout << std::setw(10) << std::left << b << " | " << std::right;
-        std::cout << std::setw(2) << biome1[b] << "   " << std::setw(3) << percent(biome1[b], realmCount) << "% | ";
-        if (b == Biome::Mountain) {
-            std::cout << "          | ";
-        } else {
-            std::cout << std::setw(2) << biome2[b] << "   " << std::setw(3) << percent(biome2[b], realmCount) << "% | ";
-        }
-        std::cout << std::setw(2) << biomeDual[b] << "   " << std::setw(3) << percent(biomeDual[b], biomeCount) << "%\n";
+        std::cout << std::setw(10) << std::left << b << "   " << std::right;
+        std::cout << std::setw(2) << biomes[b] << "   " << std::setw(3) << percent(biomes[b], realmCount) << "%\n";
     }
 
     std::cout << "\nMost Links: " << maxLinks << "\n";

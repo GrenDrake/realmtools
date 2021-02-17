@@ -85,8 +85,7 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(4) << r->populationDensity << " | ";
         realmList << std::setw(4) << r->speciesHome << " | ";
         realmList << std::setw(4) << r->primarySpecies << " | ";
-        realmList << std::setw(4) << static_cast<int>(r->biome[0]) << " | ";
-        realmList << std::setw(4) << static_cast<int>(r->biome[1]) << " | ";
+        realmList << std::setw(4) << static_cast<int>(r->biome) << " | ";
         bool first = true;
         for (unsigned i = 0; i < r->links.size(); ++i) {
             if (first) first = false;
@@ -116,7 +115,7 @@ bool World::readFromFile(const std::string &filename) {
         if (parts.empty()) continue;
 
         if (parts[0] == "R") {
-            if (parts.size() != 14) {
+            if (parts.size() != 13) {
                 std::cerr << lineNo << ": realm has wrong number of data items (found " << parts.size() << ").\n";
                 continue;
             }
@@ -131,8 +130,7 @@ bool World::readFromFile(const std::string &filename) {
             r->populationDensity = strToInt(parts[7]);
             r->speciesHome  = strToInt(parts[8]);
             r->primarySpecies = strToInt(parts[9]);
-            r->biome[0]     = static_cast<Biome>(strToInt(parts[10]));
-            r->biome[1]     = static_cast<Biome>(strToInt(parts[11]));
+            r->biome        = static_cast<Biome>(strToInt(parts[10]));
             r->name         = parts[13];
             if (r->x > newMaxX) newMaxX = r->x;
             if (r->y > newMaxY) newMaxY = r->y;
@@ -333,8 +331,8 @@ std::ostream& operator<<(std::ostream &out, const Biome &biome) {
         case Biome::Grasslands:
             out << "plains";
             break;
-        case Biome::Mountain:
-            out << "mountain";
+        case Biome::Aquatic:
+            out << "aquatic";
             break;
         case Biome::Savanna:
             out << "savanna";

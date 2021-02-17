@@ -33,7 +33,7 @@ struct Species {
 
 enum class Biome {
     Forest, Desert, Tundra, Grasslands, Savanna, Jungle,
-    Mountain,
+    Aquatic,
     BiomeCount,
 
     None = 9999,
@@ -49,7 +49,7 @@ struct Realm {
     int x, y;
     int primarySpecies;
     bool speciesHome;
-    Biome biome[2];
+    Biome biome;
     std::vector<Link> links;
     int diameter; // kilometres
     int populationDensity;
