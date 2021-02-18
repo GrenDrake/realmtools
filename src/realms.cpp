@@ -14,6 +14,7 @@
 
 void showHelp(World &world, const std::vector<std::string> &arguments);
 
+void makeSQL(World &world, const std::vector<std::string> &arguments);
 void makeSVG(World &world, const std::vector<std::string> &arguments);
 void statsDispatcher(World &world, const std::vector<std::string> &arguments);
 void listDispatcher(World &world, const std::vector<std::string> &arguments);
@@ -176,10 +177,12 @@ void showRealm(World &world, const std::vector<std::string> &arguments) {
     std::cout << "Biome: " << r->biome << "\n";
     std::cout << "Tech Level: " << r->techLevel << "\n";
     std::cout << "Magic Level: " << r->magicLevel << "\n";
-    const Species *s = world.speciesByIdent(r->speciesHome);
+    const Species *s = world.speciesByIdent(r->primarySpecies);
     if (s) {
-        std::cout << "Home realm for species: " << s->name;
-        std::cout << " [" << r->speciesHome << "]\n";
+        std::cout << "Primary species: " << s->name;
+        std::cout << " [" << r->primarySpecies << "]";
+        if (r->speciesHome) std::cout << " (home realm)";
+        std::cout << '\n';
     }
 
     std::cout << "\n";
@@ -278,6 +281,8 @@ std::vector<CommandInfo> commands{
                                               "Displays realm information." },
     { "species",       showSpecies,     2, 2, "(species id)",
                                               "Displays species information" },
+    { "sql",           makeSQL,         1, 1, "",
+                                              "Creates SQL file with realms data." },
     { "svg",           makeSVG,         1, 1, "",
                                               "Outputs map of all realm connects as an SVG file." },
     { "stats",         statsDispatcher, 2, 2, "(faction|realm|species)",

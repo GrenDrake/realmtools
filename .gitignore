@@ -9,3 +9,5 @@ realms
 # Program data and output files
 *.svg
 *.txt
+*.sql
+*.db
