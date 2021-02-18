@@ -12,8 +12,6 @@
 
 #include "realms.h"
 
-const double PI = 3.14159265358979323846;
-
 void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     int speciesCount = world.species.size();
 
@@ -55,17 +53,20 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     std::map<TechLevel, int> tech;
     std::map<MagicLevel, int> magic;
 
-    int maxDiameter = 0;
-    int minDiameter = 999999;
+    int maxDiameter = 0, maxDiameterId = -1;
+    int minDiameter = 999999, minDiameterId = -1;
     int totalDiameter = 0;
 
-    int maxPopDensity = 0;
-    int minPopDensity = 999999;
+    int maxPopDensity = 0, maxPopDensityId = -1;
+    int minPopDensity = 999999, minPopDensityId = -1;
     int totalPopDensity = 0;
+
+    int maxPopulation = 0, maxPopulationId = -1;
+    int minPopulation = 999999999, minPopulationId = -1;
 
     unsigned long totalPopulation = 0;
 
-    unsigned maxLinks = 0;
+    unsigned maxLinks = 0, maxLinksId = -1;
     int totalLinks = 0;
 
     for (const Realm *r : world.realms) {
@@ -73,19 +74,20 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
         ++tech[r->techLevel];
         ++magic[r->magicLevel];
 
-        if (r->links.size() > maxLinks) maxLinks = r->links.size();
+        if (r->links.size() > maxLinks) { maxLinks = r->links.size(); maxLinksId = r->ident; }
         totalLinks += r->links.size();
 
-        if (r->diameter > maxDiameter) maxDiameter = r->diameter;
-        if (r->diameter < minDiameter) minDiameter = r->diameter;
+        if (r->diameter > maxDiameter) { maxDiameter = r->diameter; maxDiameterId = r->ident; }
+        if (r->diameter < minDiameter) { minDiameter = r->diameter; minDiameterId = r->ident; }
         totalDiameter += r->diameter;
 
-        if (r->populationDensity > maxPopDensity) maxPopDensity = r->populationDensity;
-        if (r->populationDensity < minPopDensity) minPopDensity = r->populationDensity;
-        totalPopDensity += r->populationDensity;
+        if (r->populationDensity > maxPopDensity) { maxPopDensity = r->populationDensity; maxPopDensityId = r->ident; }
+        if (r->populationDensity < minPopDensity) { minPopDensity = r->populationDensity; minPopDensityId = r->ident; }
+        totalPopulation += r->population();
 
-        int area = r->diameter/2 * r->diameter/2 * PI;
-        totalPopulation += area * r->populationDensity;
+        if (r->population() > maxPopulation) { maxPopulation = r->population(); maxPopulationId = r->ident; }
+        if (r->population() < minPopulation) { minPopulation = r->population(); minPopulationId = r->ident; }
+        totalPopDensity += r->populationDensity;
     }
 
     std::cout << '\n';
@@ -111,16 +113,34 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
         std::cout << std::setw(2) << magic[b] << "   " << std::setw(3) << percent(magic[b], realmCount) << "%\n";
     }
 
-    std::cout << "\nMost Links: " << maxLinks << "\n";
+    std::cout << "\nMost Links: " << maxLinks;
+    if (maxLinksId >= 0) std::cout << " (" << world.realmByIdent(maxLinksId)->name << " [" << maxLinksId << "])";
+    std::cout << '\n';
     std::cout << "Average Links: " << totalLinks / realmCount << "\n";
 
-    std::cout << "\nLargest Diameter: " << maxDiameter << " km\n";
+    std::cout << "\nLargest Diameter: " << maxDiameter;
+    if (maxDiameterId >= 0) std::cout << " (" << world.realmByIdent(maxDiameterId)->name << " [" << maxDiameterId << "])";
+    std::cout << " km\n";
     std::cout << "Average Diameter: " << (totalDiameter / realmCount) << " km\n";
-    std::cout << "Smallest Diameter: " << minDiameter << " km\n";
+    std::cout << "Smallest Diameter: " << minDiameter;
+    if (minDiameterId >= 0) std::cout << " (" << world.realmByIdent(minDiameterId)->name << " [" << minDiameterId << "])";
+    std::cout << " km\n";
 
-    std::cout << "\nLargest Pop. Density: " << maxPopDensity << "\n";
+    std::cout << "\nLargest Population: " << intToString(maxPopulation);
+    if (maxPopulationId >= 0) std::cout << " (" << world.realmByIdent(maxPopulationId)->name << " [" << maxPopulationId << "])";
+    std::cout << '\n';
+    std::cout << "Average Population: " << intToString(totalPopulation / realmCount) << "\n";
+    std::cout << "Smallest Population: " << intToString(minPopulation);
+    if (minPopulationId >= 0) std::cout << " (" << world.realmByIdent(minPopulationId)->name << " [" << minPopulationId << "])";
+    std::cout << '\n';
+
+    std::cout << "\nLargest Pop. Density: " << maxPopDensity;
+    if (maxPopDensityId >= 0) std::cout << " (" << world.realmByIdent(maxPopDensityId)->name << " [" << maxPopDensityId << "])";
+    std::cout << '\n';
     std::cout << "Average Pop. Density: " << (totalPopDensity / realmCount) << "\n";
-    std::cout << "Smallest Pop. Density: " << minPopDensity << "\n\n";
+    std::cout << "Smallest Pop. Density: " << minPopDensity;
+    if (minPopDensityId >= 0) std::cout << " (" << world.realmByIdent(minPopDensityId)->name << " [" << minPopDensityId << "])";
+    std::cout << "\n\n";
 
     std::cout << "Total Realms: " << world.realms.size() << "\n";
     std::cout << "Total Population: " << totalPopulation << "\n";
