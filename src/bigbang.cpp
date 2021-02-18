@@ -168,8 +168,16 @@ int main() {
         r->primarySpecies = -1;
         r->speciesHome = false;
         r->diameter = 412 + rngNext(208);
-        r->magicLevel = static_cast<MagicLevel>(rngNext(static_cast<int>(MagicLevel::Count)));
         r->techLevel = static_cast<TechLevel>(rngNext(static_cast<int>(TechLevel::Count)));
+        if (r->techLevel == TechLevel::NoTech) {
+            if (rngNext(3) != 1)    r->magicLevel = MagicLevel::FullMagic;
+            else                    r->magicLevel = MagicLevel::SemiMagic;
+        } else if (r->techLevel == TechLevel::FullTech) {
+            if (rngNext(3) != 1)    r->magicLevel = MagicLevel::NoMagic;
+            else                    r->magicLevel = MagicLevel::SemiMagic;
+        } else { // semi-tech
+            r->magicLevel = static_cast<MagicLevel>(rngNext(static_cast<int>(MagicLevel::Count)));
+        }
         r->populationDensity = 15 + rngNext(70);
         r->biome = static_cast<Biome>(rngNext(static_cast<int>(Biome::BiomeCount)));
     }

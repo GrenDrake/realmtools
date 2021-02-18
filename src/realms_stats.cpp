@@ -52,6 +52,7 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     std::map<Biome, int> biomes;
     std::map<TechLevel, int> tech;
     std::map<MagicLevel, int> magic;
+    std::map<std::pair<TechLevel,MagicLevel>, int> combo;
 
     int maxDiameter = 0, maxDiameterId = -1;
     int minDiameter = 999999, minDiameterId = -1;
@@ -74,6 +75,7 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
         ++biomes[r->biome];
         ++tech[r->techLevel];
         ++magic[r->magicLevel];
+        ++combo[std::make_pair(r->techLevel, r->magicLevel)];
 
         if (r->links.size() > maxLinks) { maxLinks = r->links.size(); maxLinksId = r->ident; }
         totalLinks += r->links.size();
@@ -102,17 +104,25 @@ void showRealmStats(World &world, const std::vector<std::string> &arguments) {
     }
 
     std::cout << '\n';
-    std::cout << "Level         #      %\n";
-    std::cout << "-----------------------\n";
+    std::cout << "Level         #      %     Level         #      % \n";
+    std::cout << "-----------------------    -----------------------\n";
     for (int i = 0; i < static_cast<int>(TechLevel::Count); ++i) {
-        TechLevel b = static_cast<TechLevel>(i);
-        std::cout << std::setw(10) << std::left << b << "   " << std::right;
-        std::cout << std::setw(2) << tech[b] << "   " << std::setw(3) << percent(tech[b], realmCount) << "%\n";
+        TechLevel t = static_cast<TechLevel>(i);
+        MagicLevel m = static_cast<MagicLevel>(i);
+
+        std::cout << std::setw(10) << std::left << t << "   " << std::right;
+        std::cout << std::setw(2) << tech[t] << "   " << std::setw(3) << percent(tech[t], realmCount) << "%     ";
+        std::cout << std::setw(10) << std::left << m << "   " << std::right;
+        std::cout << std::setw(2) << magic[m] << "   " << std::setw(3) << percent(magic[m], realmCount) << "%\n";
     }
-    for (int i = 0; i < static_cast<int>(MagicLevel::Count); ++i) {
-        MagicLevel b = static_cast<MagicLevel>(i);
-        std::cout << std::setw(10) << std::left << b << "   " << std::right;
-        std::cout << std::setw(2) << magic[b] << "   " << std::setw(3) << percent(magic[b], realmCount) << "%\n";
+
+    std::cout << '\n';
+    std::cout << "Tech          Magic        #      %\n";
+    std::cout << "------------------------------------\n";
+    for (const auto &iter : combo) {
+        std::cout << std::setw(10) << std::left << iter.first.first << "   ";
+        std::cout << std::setw(10) << iter.first.second << "   " << std::right;
+        std::cout << std::setw(2) << iter.second << "   " << std::setw(3) << percent(iter.second, realmCount) << "%\n";
     }
 
     std::cout << "\nMost Links: " << maxLinks;
