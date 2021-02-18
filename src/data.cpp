@@ -33,6 +33,32 @@ std::vector<Species> sapientSpecies = {
     {   -1, "garg. beast",  "Gb",   Stance::Quad,   Wings::None,    0 },
 };
 
+std::vector<const char*> factionNames = {
+    "Cruilunid Empire",
+    "Eacovalon Empire",
+    "Aigoddodor Empire",
+    "Luxining Kingdom",
+    "Ariyiwen Empire",
+    "Trathathia Empire",
+    "Wunyth Empire",
+    "Cesan Dynasty",
+    "Krudronada Empire",
+    "Hethen Dynasty",
+    "Pashaterra Dynasty",
+    "Taisian Dynasty",
+    "Apuirenth Kingdom",
+    "Auphabia Kingdom",
+    "Hodo Dynasty",
+    "Meqicaea Empire",
+    "Oupican Kingdom",
+    "Xunao Dynasty",
+    "Vivulyra Empire",
+    "Auxaxiston Kingdom",
+    "Therith Dynasty",
+    "Xibreacaea Dynasty",
+    "Driven Kingdom",
+};
+
 std::vector<const char*> realmNames = {
     "Black Cardamon Duchy",
     "Grand Province",

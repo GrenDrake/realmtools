@@ -12,6 +12,7 @@
 
 #include "realms.h"
 
+extern std::vector<const char*> factionNames;
 extern std::vector<const char*> realmNames;
 
 const int MAX_FACTIONS = 20;
@@ -263,7 +264,9 @@ int main() {
         Faction *f = new Faction;
         f->ident = i;
         if (i == 0) f->name = "Independant";
-        else        f->name = makeName();
+        else if (i < static_cast<int>(factionNames.size())) {
+            f->name = factionNames[i];
+        } else f->name = makeName();
         f->r = factionColours[i].r;
         f->g = factionColours[i].g;
         f->b = factionColours[i].b;

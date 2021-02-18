@@ -14,6 +14,7 @@
 
 void showHelp(World &world, const std::vector<std::string> &arguments);
 
+void makeGViz(World &world, const std::vector<std::string> &arguments);
 void makeSQL(World &world, const std::vector<std::string> &arguments);
 void makeSVG(World &world, const std::vector<std::string> &arguments);
 void statsDispatcher(World &world, const std::vector<std::string> &arguments);
@@ -261,6 +262,8 @@ std::vector<CommandInfo> commands{
                                               "Check length of names does not exceed maximum." },
     { "dist",          findDistance,    3, 3, "(from) (to)",
                                               "Finds the minimum number of transits required to travel between two realms." },
+    { "dot",           makeGViz,         1, 1, "",
+                                              "Outputs GraphViz dot file." },
     { "help",          showHelp,        1, 2, "[command]",
                                               "Display list of valid commands. If a command is specified, displays information on command usage instead." },
     { "list",          listDispatcher,  2, 3, "(factions|realms|species) [sort by]",
