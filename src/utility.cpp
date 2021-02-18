@@ -10,6 +10,11 @@ int percent(int value, int ofMax) {
     return value * 100 / ofMax;
 }
 
+unsigned long long calcArea(double radius) {
+    const double PI = 3.141592653589793;
+    return PI * radius * radius;
+}
+
 
 std::string& trim(std::string &text) {
     if (text.empty()) return text;
@@ -96,7 +101,7 @@ struct Sep : public std::numpunct<CharT> {
     virtual std::string do_grouping() const { return "\003"; }
 };
 
-std::string intToString(int number) {
+std::string intToString(long long number) {
     std::stringstream line;
     line.imbue(std::locale(std::cout.getloc(), new Sep <char>()));
     line << number;

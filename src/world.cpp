@@ -10,11 +10,8 @@
 
 #include "realms.h"
 
-const double PI = 3.14159;
-
 int Realm::area() const {
-    double radius = diameter / 2.0;
-    return PI * radius * radius;
+    return calcArea(diameter / 2.0);
 }
 
 int Realm::population() const {

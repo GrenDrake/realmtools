@@ -108,16 +108,15 @@ std::ostream& operator<<(std::ostream &out, const MagicLevel &level);
 std::ostream& operator<<(std::ostream &out, const Stance &stance);
 std::ostream& operator<<(std::ostream &out, const Wings &wing);
 
-std::string intToString(int number);
-
 int percent(int value, int ofMax);
+unsigned long long calcArea(double radius);
 const std::string& trim(const std::string &text);
 std::string& trim(std::string &text);
 std::vector<std::string> explodeOnWhitespace(std::string text);
 std::vector<std::string> explode(const std::string &text, char onChar);
 double distance(double x1, double y1, double x2, double y2);
 int strToInt(const std::string &text);
-std::string intToString(int number);
+std::string intToString(long long number);
 void rngInit(int seed);
 int rngNext(int max);
 
