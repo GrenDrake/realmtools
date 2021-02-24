@@ -31,6 +31,7 @@ std::vector<Species> sapientSpecies = {
     {   -1, "cervine-taur", "Ct",   Stance::Taur,   Wings::None,    0 },
     {   -1, "liontaur",     "Lt",   Stance::Taur,   Wings::None,    0 },
     {   -1, "garg. beast",  "Gb",   Stance::Quad,   Wings::None,    0 },
+    {   -1, "draconian",    "Dn",   Stance::Biped,  Wings::Back,    0 },
 };
 
 std::vector<const char*> factionNames = {
