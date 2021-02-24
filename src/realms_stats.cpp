@@ -15,6 +15,7 @@
 void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     int speciesCount = world.species.size();
 
+    std::map<int, int> counts;
     std::map<Stance, int> stances;
     std::map<Wings, int> wings;
 
@@ -22,7 +23,13 @@ void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
     int maxHeight = 0;
     int totalHeight = 0;
 
+    int longestName = 0;
+
+    for (const Realm *r : world.realms) {
+        ++counts[r->primarySpecies];
+    }
     for (const Species *s : world.species) {
+        if (s->name.size() > longestName) longestName = s->name.size();
         ++stances[s->stance];
         ++wings[s->wings];
 
@@ -30,6 +37,18 @@ void showSpeciesStats(World &world, const std::vector<std::string> &arguments) {
         if (s->height > maxHeight) maxHeight = s->height;
         totalHeight += s->height;
     }
+
+    std::cout << std::left << std::setw(longestName) << "Name" << "  Count\n";
+    for (int i = 0; i < longestName; ++i) std::cout << '-';
+    std::cout << "-------\n";
+    for (auto iter : counts) {
+        std::cout << std::setw(longestName);
+        const Species *s = world.speciesByIdent(iter.first);
+        if (s)  std::cout << s->name;
+        else    std::cout << "(bad ident)";
+        std::cout << "  " << iter.second << "\n";
+    }
+    std::cout << "\n\n";
 
     std::cout << "Biped: " << stances[Stance::Biped]  << " (" << percent(stances[Stance::Biped], speciesCount) << "%)\n";
     std::cout << "Taur:  " << stances[Stance::Taur]   << " (" << percent(stances[Stance::Taur],  speciesCount) << "%)\n";
