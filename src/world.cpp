@@ -341,6 +341,9 @@ std::ostream& operator<<(std::ostream &out, const Biome &biome) {
         case Biome::Jungle:
             out << "jungle";
             break;
+        case Biome::Swamp:
+            out << "swamp";
+            break;
         case Biome::None:
             out << "none";
             break;

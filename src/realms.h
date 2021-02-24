@@ -33,7 +33,7 @@ struct Species {
 
 enum class Biome {
     Forest, Desert, Tundra, Grasslands, Savanna, Jungle,
-    Aquatic,
+    Aquatic, Swamp,
     BiomeCount,
 
     None = 9999,

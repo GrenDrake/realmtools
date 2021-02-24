@@ -16,7 +16,8 @@ extern std::vector<const char*> factionNames;
 extern std::vector<const char*> realmNames;
 
 const int MAX_FACTIONS = 20;
-const int MAX_WIDTH = 70;
+const int MAX_SPECIES = 35;
+const int MAX_WIDTH = 140;
 const int MAX_HEIGHT = MAX_WIDTH * 2 / 3;
 const int MAX_ITERATIONS = 100;
 const int MAX_REALMS = 1600;
@@ -330,6 +331,7 @@ int main() {
 
     std::cerr << "Placing species...\n";
     Realm *home = nullptr;
+    int count = 0;
     do {
         int iterations = 0;
 
@@ -358,12 +360,19 @@ int main() {
             std::cerr << "\tSpecies generation terminated -- could not place.\n";
             std::cerr << "\tGenerated " << world.species.size() << " species.\n";
         }
+        ++count;
+        if (count >= MAX_SPECIES) break;
     } while(home);
 
     std::cerr << "Assigning primary species...\n";
+    int nextSpecies = 0;
     for (Realm *r : world.realms) {
         if (r->primarySpecies >= 0) continue;
-        r->primarySpecies = rngNext(world.species.size());
+        r->primarySpecies = world.species[nextSpecies]->ident;
+        ++nextSpecies;
+        if (nextSpecies >= world.species.size()) {
+            nextSpecies = 0;
+        }
     }
 
     std::cerr << "Saving data to file...\n";
