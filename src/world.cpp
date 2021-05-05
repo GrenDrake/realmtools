@@ -64,10 +64,9 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(2) << static_cast<int>(s->stance) << " | ";
         realmList << std::setw(2) << static_cast<int>(s->wings) << " | ";
         realmList << std::setw(3) << s->height << " | ";
-        realmList << std::setw(4) << s->homeRealm << " | ";
-        realmList << std::setw(3) << s->colour.r << " | ";
-        realmList << std::setw(3) << s->colour.g << " | ";
-        realmList << std::setw(3) << s->colour.b << " | ";
+        realmList << std::setw(3) << s->r << " | ";
+        realmList << std::setw(3) << s->g << " | ";
+        realmList << std::setw(3) << s->b << " | ";
         realmList << s->abbrev << " | ";
         realmList << s->name << "\n";
     }
@@ -80,16 +79,13 @@ bool World::writeToFile(const std::string &filename) const {
         realmList << std::setw(3) << r->faction << " | ";
         realmList << r->factionHome << " | ";
         realmList << std::setw(4) << r->populationDensity << " | ";
-        realmList << std::setw(4) << r->speciesHome << " | ";
         realmList << std::setw(4) << r->primarySpecies << " | ";
-        realmList << std::setw(1) << static_cast<int>(r->magicLevel) << " | ";
-        realmList << std::setw(1) << static_cast<int>(r->techLevel) << " | ";
         realmList << std::setw(1) << static_cast<int>(r->biome) << " | ";
         bool first = true;
         for (unsigned i = 0; i < r->links.size(); ++i) {
             if (first) first = false;
             else realmList << " ; ";
-            realmList << r->links[i].linkTo;
+            realmList << r->links[i].linkTo << ' ' << r->links[i].distance << ' ' << r->links[i].bearing ;
         }
         realmList << " | " << r->name << '\n';
     }
@@ -114,7 +110,7 @@ bool World::readFromFile(const std::string &filename) {
         if (parts.empty()) continue;
 
         if (parts[0] == "R") {
-            if (parts.size() != 15) {
+            if (parts.size() != 12) {
                 std::cerr << lineNo << ": realm has wrong number of data items (found " << parts.size() << ").\n";
                 continue;
             }
@@ -127,27 +123,32 @@ bool World::readFromFile(const std::string &filename) {
             r->faction      = strToInt(parts[5]);
             r->factionHome  = strToInt(parts[6]);
             r->populationDensity = strToInt(parts[7]);
-            r->speciesHome  = strToInt(parts[8]);
-            r->primarySpecies = strToInt(parts[9]);
-            r->magicLevel   = static_cast<MagicLevel>(strToInt(parts[10]));
-            r->techLevel    = static_cast<TechLevel>(strToInt(parts[11]));
-            r->biome        = static_cast<Biome>(strToInt(parts[12]));
-            r->name         = parts[14];
+            r->primarySpecies = strToInt(parts[8]);
+            r->biome        = static_cast<Biome>(strToInt(parts[9]));
+            r->name         = parts[11];
             if (r->x > newMaxX) newMaxX = r->x;
             if (r->y > newMaxY) newMaxY = r->y;
 
-            auto links = explode(parts[13], ';');
+            auto links = explode(parts[10], ';');
             for (const std::string &s : links) {
-                int to = strToInt(s);
+                auto linkData = explode(s, ' ');
+                if (linkData.size() != 3) {
+                    std::cerr << lineNo << ": realm link data has wrong number of data items (found " << linkData.size() << ", expected 3).\n";
+                    continue;
+                }
+                int to = strToInt(linkData[0]);
+                int distance = strToInt(linkData[1]);
+                int bearing = strToInt(linkData[2]);
                 if (to < 0) continue;
-                r->links.push_back(Link{to});
+                Link newLink{to, distance, bearing};
+                r->links.push_back(newLink);
             }
 
             newRealms.push_back(r);
 
         } else if (parts[0] == "F") {
             if (parts.size() != 7) {
-                std::cerr << lineNo << ": faction has wrong number of data items.\n";
+                std::cerr << lineNo << ": faction has wrong number of data items (found " << parts.size() << ").\n";
                 continue;
             }
 
@@ -161,8 +162,8 @@ bool World::readFromFile(const std::string &filename) {
             newFactions.push_back(f);
 
         } else if (parts[0] == "S") {
-            if (parts.size() != 11) {
-                std::cerr << lineNo << ": species has wrong number of data items.\n";
+            if (parts.size() != 10) {
+                std::cerr << lineNo << ": species has wrong number of data items (found " << parts.size() << ").\n";
                 continue;
             }
 
@@ -171,12 +172,11 @@ bool World::readFromFile(const std::string &filename) {
             s->stance       = static_cast<Stance>(strToInt(parts[2]));
             s->wings        = static_cast<Wings>(strToInt(parts[3]));
             s->height       = strToInt(parts[4]);
-            s->homeRealm    = strToInt(parts[5]);
-            s->colour.r     = strToInt(parts[6]);
-            s->colour.g     = strToInt(parts[7]);
-            s->colour.b     = strToInt(parts[8]);
-            s->abbrev       = parts[9];
-            s->name         = parts[10];
+            s->r            = strToInt(parts[5]);
+            s->g            = strToInt(parts[6]);
+            s->b            = strToInt(parts[7]);
+            s->abbrev       = parts[8];
+            s->name         = parts[9];
             newSpecies.push_back(s);
 
         } else {
@@ -349,40 +349,6 @@ std::ostream& operator<<(std::ostream &out, const Biome &biome) {
             break;
         default:
             out << "bad biome";
-    }
-    return out;
-}
-
-std::ostream& operator<<(std::ostream &out, const TechLevel &level) {
-    switch (level) {
-        case TechLevel::NoTech:
-            out << "no tech";
-            break;
-        case TechLevel::SemiTech:
-            out << "semi tech";
-            break;
-        case TechLevel::FullTech:
-            out << "full tech";
-            break;
-        default:
-            out << "bad tech level";
-    }
-    return out;
-}
-
-std::ostream& operator<<(std::ostream &out, const MagicLevel &level) {
-    switch (level) {
-        case MagicLevel::NoMagic:
-            out << "no magic";
-            break;
-        case MagicLevel::SemiMagic:
-            out << "semi magic";
-            break;
-        case MagicLevel::FullMagic:
-            out << "full magic";
-            break;
-        default:
-            out << "bad magic level";
     }
     return out;
 }

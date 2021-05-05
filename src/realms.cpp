@@ -69,14 +69,12 @@ void findNear(World &world, const std::vector<std::string> &arguments) {
     }
     std::sort(work.begin(), work.end(), realmNearSort);
 
-    std::cout << "     REALM                   DIST  HR  PRIMARY SPECIES\n";
+    std::cout << "     REALM                   DIST  SPECIES\n";
     for (const Realm *r : work) {
         Species *s = world.speciesByIdent(r->primarySpecies);
         std::cout << std::setw(3) << r->ident << ": ";
         std::cout << std::left << std::setw(MAX_NAME_LENGTH) << r->name << std::right << "    ";
-        std::cout << std::setw(4) << r->work2 << "  ";
-        if (r->speciesHome) std::cout << 'X';
-        else                std::cout << ' ';
+        std::cout << std::setw(4) << r->work2;
         std::cout << "   " << s->name << " [" << s->ident << "]\n";
     }
     std::cout << '\n';
@@ -108,9 +106,7 @@ void findNearXY(World &world, const std::vector<std::string> &arguments) {
         std::cout << std::setw(8) << r->work2 / 1000.0 << "  ";
         std::cout << std::left << std::setw(4) << r->x;
         std::cout << std::setw(4) << r->y << std::right;
-        if (r->speciesHome) std::cout << 'X';
-        else                std::cout << ' ';
-        std::cout << "   " << s->name << " [" << s->ident << "]\n";
+        std::cout << "    " << s->name << " [" << s->ident << "]\n";
     }
     std::cout << '\n';
 }
@@ -141,14 +137,12 @@ void randomRealm(World &world, const std::vector<std::string> &arguments) {
         if (!isDup) work.push_back(s);
     }
 
-    std::cout << "     REALM                   HR  PRIMARY SPECIES\n";
+    std::cout << "     REALM                   PRIMARY SPECIES\n";
     for (const Realm *r : work) {
         Species *s = world.speciesByIdent(r->primarySpecies);
         std::cout << std::setw(3) << r->ident << ": ";
         std::cout << std::left << std::setw(MAX_NAME_LENGTH) << r->name << std::right << "    ";
-        if (r->speciesHome) std::cout << 'X';
-        else                std::cout << ' ';
-        std::cout << "   " << s->name << " [" << s->ident << "]\n";
+        std::cout << "    " << s->name << " [" << s->ident << "]\n";
     }
     std::cout << '\n';
 }
@@ -169,20 +163,18 @@ void showRealm(World &world, const std::vector<std::string> &arguments) {
     std::cout << r->name << " [" << r->ident << "]\n";
     std::cout << "Links:";
     for (const Link &l : r->links) {
-        std::cout << " <" << l.linkTo << '>';
+        std::cout << " <" << l.linkTo;
+        std::cout << ' ' << l.distance << "% @ " << l.bearing << " deg.>";
     }
     std::cout << "\nDiameter: " << r->diameter << " mi.\n";
     std::cout << "Area: " << intToString(r->area()) << " sq mi.\n";
     std::cout << "Pop. Density: " << r->populationDensity << " per sq mi.\n";
     std::cout << "Population: " << intToString(r->population()) << "\n";
     std::cout << "Biome: " << r->biome << "\n";
-    std::cout << "Tech Level: " << r->techLevel << "\n";
-    std::cout << "Magic Level: " << r->magicLevel << "\n";
     const Species *s = world.speciesByIdent(r->primarySpecies);
     if (s) {
         std::cout << "Primary species: " << s->name;
         std::cout << " [" << r->primarySpecies << "]";
-        if (r->speciesHome) std::cout << " (home realm)";
         std::cout << '\n';
     }
 
@@ -201,7 +193,6 @@ void showSpecies(World &world, const std::vector<std::string> &arguments) {
     }
 
     std::cout << s->name << " [" << s->ident << "]\n";
-    std::cout << "Home Realm: " << s->homeRealm << "\n";
     std::cout << "Height: " << s->height << " cm\n";
     std::cout << "Stance: " << s->stance << "\n";
     std::cout << "Wings: " << s->wings << "\n";

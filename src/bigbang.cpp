@@ -12,47 +12,19 @@
 
 #include "realms.h"
 
-extern std::vector<const char*> factionNames;
 extern std::vector<const char*> realmNames;
 
 const int MAX_FACTIONS = 20;
-const int MAX_SPECIES = 35;
-const int MAX_WIDTH = 140;
+const int MAX_SPECIES = 30;
+
+const int MAX_WIDTH = 200;
 const int MAX_HEIGHT = MAX_WIDTH * 2 / 3;
 const int MAX_ITERATIONS = 100;
-const int MAX_REALMS = 1600;
+const int MAX_REALMS = 1000;
 const int RNG_SEED = 234;
 const int MAX_LINK_DIST = 10;
 const int SPECIES_MIN_DIST = 3;
 
-std::vector<Colour> factionColours = {
-    {240,163,255},
-    {0,117,220},
-    {153,63,0},
-    {76,0,92},
-    {25,25,25},
-    {0,92,49},
-    {43,206,72},
-    {255,204,153},
-    {128,128,128},
-    {148,255,181},
-    {143,124,0},
-    {157,204,0},
-    {194,0,136},
-    {0,51,128},
-    {255,164,5},
-    {255,168,187},
-    {66,102,0},
-    {255,0,16},
-    {94,241,242},
-    {0,153,143},
-    {224,255,102},
-    {116,10,255},
-    {153,0,0},
-    {255,255,128},
-    {255,255,0},
-    {255,80,5}
-};
 
 // https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
 bool linesIntersect(double a, double b, double c, double d,
@@ -157,7 +129,7 @@ int main() {
     if (world.realms.size() <= 0) return 1;
 
     std::cerr << "Assigning realm details...\n";
-    int nextRealmName = 0;
+    unsigned nextRealmName = 0;
     for (Realm *r : world.realms) {
         if (nextRealmName < realmNames.size()) {
             r->name = realmNames[nextRealmName];
@@ -168,20 +140,10 @@ int main() {
         r->faction = -1;
         r->factionHome = false;
         r->primarySpecies = -1;
-        r->speciesHome = false;
         r->diameter = 412 + rngNext(208);
-        r->techLevel = static_cast<TechLevel>(rngNext(static_cast<int>(TechLevel::Count)));
-        if (r->techLevel == TechLevel::NoTech) {
-            if (rngNext(3) != 1)    r->magicLevel = MagicLevel::FullMagic;
-            else                    r->magicLevel = MagicLevel::SemiMagic;
-        } else if (r->techLevel == TechLevel::FullTech) {
-            if (rngNext(3) != 1)    r->magicLevel = MagicLevel::NoMagic;
-            else                    r->magicLevel = MagicLevel::SemiMagic;
-        } else { // semi-tech
-            r->magicLevel = static_cast<MagicLevel>(rngNext(static_cast<int>(MagicLevel::Count)));
-        }
         r->populationDensity = 15 + rngNext(70);
         r->biome = static_cast<Biome>(rngNext(static_cast<int>(Biome::BiomeCount)));
+        for (Link &l : r->links) l.bearing = 0;
     }
 
 
@@ -258,20 +220,32 @@ int main() {
         r->addLink(target);
     }
 
+    const int minDegrees = 35;
+    std::cerr << "Determining gateway locations...\n";
+    for (Realm *r : world.realms) {
+        r->links[0].bearing = 0;
+        r->links[0].distance = rngNext(50) + 25;
+        for (unsigned i = 1; i < r->links.size(); ++i) {
+            int bearing = -1;
+            do {
+                bearing = rngNext(360);
+
+                for (const Link &link : r->links) {
+                    if (bearing >= link.bearing - minDegrees && bearing <= link.bearing + minDegrees) bearing = -1;
+                    int test = bearing - 360;
+                    if (test >= link.bearing - minDegrees && test <= link.bearing + minDegrees) bearing = -1;
+                }
+            } while (bearing < 0);
+            r->links[i].bearing = bearing;
+
+            r->links[i].distance = rngNext(50) + 25;
+        }
+    }
 
     std::cerr << "Assigning factions...\n";
     // allocate the faction data
     for (int i = 0; i < MAX_FACTIONS; ++i) {
-        Faction *f = new Faction;
-        f->ident = i;
-        if (i == 0) f->name = "Independant";
-        else if (i < static_cast<int>(factionNames.size())) {
-            f->name = factionNames[i];
-        } else f->name = makeName();
-        f->r = factionColours[i].r;
-        f->g = factionColours[i].g;
-        f->b = factionColours[i].b;
-        f->home = -1;
+        Faction *f = makeFaction();
         world.factions.push_back(f);
     }
 
@@ -329,45 +303,51 @@ int main() {
         if (r->faction < 0) r->faction = 0;
     }
 
-    std::cerr << "Placing species...\n";
-    Realm *home = nullptr;
-    int count = 0;
-    do {
-        int iterations = 0;
+    // std::cerr << "Placing species...\n";
+    // Realm *home = nullptr;
+    // int count = 0;
+    // do {
+    //     int iterations = 0;
 
-        do {
-            ++iterations;
-            home = rngVector(world.realms);
-            if (home->speciesHome) home = nullptr;
-            else {
-                for (Species *s2 : world.species) {
-                    if (s2->homeRealm < 0) continue;
-                    if (world.findDistance(s2->homeRealm, home->ident) < SPECIES_MIN_DIST) {
-                        home = nullptr;
-                        break;
-                    }
-                }
-            }
-        } while (!home && iterations < 25);
+    //     do {
+    //         ++iterations;
+    //         home = rngVector(world.realms);
+    //         if (home->speciesHome) home = nullptr;
+    //         else {
+    //             for (Species *s2 : world.species) {
+    //                 if (s2->homeRealm < 0) continue;
+    //                 int dist = distances[std::make_pair(s2->homeRealm, home->ident)];
+    //                 if (dist < SPECIES_MIN_DIST) {
+    //                     home = nullptr;
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     } while (!home && iterations < 25);
 
-        if (home) {
-            Species *s = makeSpecies();
-            world.species.push_back(s);
-            home->speciesHome = true;
-            home->primarySpecies = s->ident;
-            s->homeRealm = home->ident;
-        } else {
-            std::cerr << "\tSpecies generation terminated -- could not place.\n";
-            std::cerr << "\tGenerated " << world.species.size() << " species.\n";
-        }
-        ++count;
-        if (count >= MAX_SPECIES) break;
-    } while(home);
+    //     if (home) {
+    //         Species *s = makeSpecies();
+    //         world.species.push_back(s);
+    //         home->speciesHome = true;
+    //         home->primarySpecies = s->ident;
+    //         s->homeRealm = home->ident;
+    //     } else {
+    //         std::cerr << "\tSpecies generation terminated -- could not place.\n";
+    //         std::cerr << "\tGenerated " << world.species.size() << " species.\n";
+    //     }
+    //     ++count;
+    //     if (count >= MAX_SPECIES) break;
+    // } while(home);
 
-    std::cerr << "Assigning primary species...\n";
-    int nextSpecies = 0;
+    std::cerr << "Building species...\n";
+    for (unsigned i = 0; i < MAX_SPECIES; ++i) {
+        Species *s = makeSpecies();
+        world.species.push_back(s);
+    }
+
+    std::cerr << "Assigning species...\n";
+    unsigned nextSpecies = 0;
     for (Realm *r : world.realms) {
-        if (r->primarySpecies >= 0) continue;
         r->primarySpecies = world.species[nextSpecies]->ident;
         ++nextSpecies;
         if (nextSpecies >= world.species.size()) {

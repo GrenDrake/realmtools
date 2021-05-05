@@ -7,10 +7,6 @@
 
 const int MAX_NAME_LENGTH = 20;
 
-struct Colour {
-    int r, g, b;
-};
-
 enum class Stance {
     Biped, Quad, Taur, Thero,
     Count
@@ -27,8 +23,7 @@ struct Species {
     Stance stance;
     Wings wings;
     int height; // centimeters
-    int homeRealm;
-    Colour colour;
+    int r, g, b;
 };
 
 enum class Biome {
@@ -39,15 +34,10 @@ enum class Biome {
     None = 9999,
 };
 
-enum class MagicLevel {
-    NoMagic, SemiMagic, FullMagic, Count
-};
-enum class TechLevel {
-    NoTech, SemiTech, FullTech, Count
-};
-
 struct Link {
     int linkTo;
+    int distance;
+    int bearing;
 };
 
 struct Realm {
@@ -55,15 +45,12 @@ struct Realm {
     std::string name;
     int x, y;
     int primarySpecies;
-    bool speciesHome;
     Biome biome;
     std::vector<Link> links;
     int diameter; // kilometres
     int populationDensity;
     int faction;
     bool factionHome;
-    MagicLevel magicLevel;
-    TechLevel techLevel;
     int work1, work2;
 
     int area() const;
@@ -103,8 +90,6 @@ struct World {
 };
 
 std::ostream& operator<<(std::ostream &out, const Biome &biome);
-std::ostream& operator<<(std::ostream &out, const TechLevel &level);
-std::ostream& operator<<(std::ostream &out, const MagicLevel &level);
 std::ostream& operator<<(std::ostream &out, const Stance &stance);
 std::ostream& operator<<(std::ostream &out, const Wings &wing);
 
@@ -122,6 +107,7 @@ int rngNext(int max);
 
 // bb_generator.cpp
 std::string makeName();
+Faction* makeFaction();
 Species* makeSpecies();
 
 

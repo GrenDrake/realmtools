@@ -31,9 +31,9 @@ void makeGViz(World &world, const std::vector<std::string> &arguments) {
             dotfile << std::setw(2) << f->b;
         } else if (showWhat == 1) {
             const Species *s = world.speciesByIdent(r->primarySpecies);
-            dotfile << std::setw(2) << s->colour.r;
-            dotfile << std::setw(2) << s->colour.g;
-            dotfile << std::setw(2) << s->colour.b;
+            dotfile << std::setw(2) << s->r;
+            dotfile << std::setw(2) << s->g;
+            dotfile << std::setw(2) << s->b;
         }
         dotfile << "\", pos=\"";
         dotfile << std::dec;
@@ -41,8 +41,6 @@ void makeGViz(World &world, const std::vector<std::string> &arguments) {
         dotfile << "!\"";
         if (showWhat == 0) {
             if (r->factionHome) dotfile << ",shape=square";
-        } else if (showWhat == 1) {
-            if (r->speciesHome) dotfile << ",shape=square";
         }
         dotfile << "];\n";
     }

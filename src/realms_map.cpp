@@ -69,18 +69,13 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
         const Species *s = world.speciesByIdent(r->primarySpecies);
         int realX = (r->x + xOffset * 2) * scale;
         int realY = (r->y + yOffset) * scale;
-        if (r->speciesHome) {
-            svgMap << "\t<rect x=\"" << realX - 5 << "\" y=\"" << realY - 5;
-            svgMap << "\" width=\"10\" height=\"10\" ";
-        } else {
-            svgMap << "\t<circle cx=\"" << realX << "\" cy=\"" << realY;
-            svgMap << "\" r=\"5\" ";
-        }
+        svgMap << "\t<circle cx=\"" << realX << "\" cy=\"" << realY;
+        svgMap << "\" r=\"5\" ";
         svgMap << "fill=\"#" << std::hex << std::setfill('0');
         if (s) {
-            svgMap << std::setw(2) << s->colour.r;
-            svgMap << std::setw(2) << s->colour.g;
-            svgMap << std::setw(2) << s->colour.b;
+            svgMap << std::setw(2) << s->r;
+            svgMap << std::setw(2) << s->g;
+            svgMap << std::setw(2) << s->b;
             svgMap << "\" />\n" << std::dec;
         } else {
             svgMap << "777777\" />\n" << std::dec;
@@ -105,8 +100,8 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
         svgMap << "\t<rect x=\"25\" y=\"" << (28 + 20 * counter) + yOffset * scale;
         svgMap << "\" width=\"15\" height=\"15\" fill=\"#";
         svgMap << std::hex << std::setfill('0');
-        svgMap << std::setw(2) << s->colour.r << std::setw(2) << s->colour.g;
-        svgMap << std::setw(2) << s->colour.b << "\"/>\n" << std::dec;
+        svgMap << std::setw(2) << s->r << std::setw(2) << s->g;
+        svgMap << std::setw(2) << s->b << "\"/>\n" << std::dec;
 
         svgMap << "\t<text x=\"" << 45 << "\" y=\"" << (40 + 20 * counter) + yOffset * scale;
         svgMap << "\" font-size=\"smaller\">";

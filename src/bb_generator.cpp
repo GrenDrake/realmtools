@@ -4,12 +4,14 @@
 
 // default data from data.cpp
 extern std::vector<Species> sapientSpecies;
+extern std::vector<const char*> factionNames;
 
 
 std::string makeNameCore(int depth);
 
 std::vector<std::string> usedNames;
 
+struct Colour { int r; int g; int b; };
 std::vector<Colour> colourList = {
     {240,163,255},
     {0,117,220},
@@ -102,8 +104,8 @@ std::vector<Wings> wingList{
 };
 
 Species* makeSpecies() {
-    static int identCounter = 0;
-    static int nextPremade = 0;
+    static unsigned identCounter = 0;
+    static unsigned nextPremade = 0;
     static unsigned nextColour = 0;
     Species *s = new Species;
     s->ident = identCounter;
@@ -124,9 +126,27 @@ Species* makeSpecies() {
         if (s->stance == Stance::Taur)  s->wings = Wings::None;
         else                            s->wings = rngVector(wingList);
     }
-    s->homeRealm = -1;
-    s->colour = colourList[nextColour];
+    s->r = colourList[nextColour].r;
+    s->g = colourList[nextColour].g;
+    s->b = colourList[nextColour].b;
     ++nextColour;
     if (nextColour >= colourList.size()) nextColour = 0;
     return s;
+}
+
+Faction* makeFaction() {
+    static unsigned identCounter = 0;
+    Faction *f = new Faction;
+    f->ident = identCounter;
+    ++identCounter;
+    if (f->ident == 0) f->name = "Independant";
+    else if (f->ident < static_cast<int>(factionNames.size())) {
+        f->name = factionNames[f->ident];
+    } else f->name = makeName();
+    int colorNum = f->ident;
+    f->r = colourList[colorNum].r;
+    f->g = colourList[colorNum].g;
+    f->b = colourList[colorNum].b;
+    f->home = -1;
+    return f;
 }

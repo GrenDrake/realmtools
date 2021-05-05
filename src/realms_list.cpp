@@ -19,15 +19,8 @@ bool realmNameSort(const Realm *l, const Realm *r) {
     return l->name < r->name;
 }
 bool realmSpeciesSort(const Realm *l, const Realm *r) {
-    if (l->speciesHome <= 0 && r->speciesHome <= 0) {
-        return realmNameSort(l, r);
-    }
-
-    if (l->speciesHome > 0 && r->speciesHome <= 0) return false;
-    if (l->speciesHome <= 0 && r->speciesHome > 0) return true;
-
-    Species *ls = w->speciesByIdent(l->speciesHome);
-    Species *rs = w->speciesByIdent(r->speciesHome);
+    Species *ls = w->speciesByIdent(l->primarySpecies);
+    Species *rs = w->speciesByIdent(r->primarySpecies);
     return ls->name < rs->name;
 }
 bool realmFactionSort(const Realm *l, const Realm *r) {
@@ -105,11 +98,6 @@ void listFactions(World &world, const std::vector<std::string> &arguments) {
         return;
     }
 
-     for (const Realm *r : world.realms) {
-        ++frequency[r->speciesHome];
-        population[r->speciesHome] += r->population();
-    }
-
     std::vector<Faction*> sorted = world.factions;
     if (arguments.size() > 2) {
         if (arguments[2] == "name") std::sort(sorted.begin(), sorted.end(), factionNameSort);
@@ -149,11 +137,6 @@ void listSpecies(World &world, const std::vector<std::string> &arguments) {
     if (arguments.size() > 3) {
         std::cout << "Excess elements in command.\nUSAGE: list species [sort]\n\n";
         return;
-    }
-
-     for (const Realm *r : world.realms) {
-        ++frequency[r->speciesHome];
-        population[r->speciesHome] += r->population();
     }
 
     std::vector<Species*> sorted = world.species;
