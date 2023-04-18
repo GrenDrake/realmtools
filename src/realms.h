@@ -107,7 +107,7 @@ int rngNext(int max);
 
 // bb_generator.cpp
 std::string makeName();
-Faction* makeFaction();
+Faction* makeFaction(const std::vector<std::string> &factionNames);
 Species* makeSpecies();
 
 

@@ -12,7 +12,8 @@
 
 #include "realms.h"
 
-extern std::vector<const char*> realmNames;
+std::vector<std::string> realmNames;
+std::vector<std::string> factionNames;
 
 const int MAX_FACTIONS = 20;
 const int MAX_SPECIES = 30;
@@ -96,7 +97,32 @@ int assignGroup(World &world, int rootIdent, int groupId) {
     return count;
 }
 
+bool fileToList(const std::string &filename, std::vector<std::string> &theList) {
+    std::ifstream inf(filename);
+    if (!inf) {
+        std::cerr << "Failed to open file " << filename << ".\n";
+        return false;
+    }
+    std::string line;
+    while (std::getline(inf, line)) {
+        trim(line);
+        if (line.empty() || line[0] == '#') continue;
+        theList.push_back(line);
+    }
+    return true;
+}
+
 int main() {
+    std::string realmNameFile = "realm_names.txt";
+    std::string factionNameFile = "faction_names.txt";
+
+    // Load premade names from file
+    fileToList(realmNameFile, realmNames);
+    fileToList(factionNameFile, factionNames);
+    std::cerr << "Loaded " << realmNames.size() << " realm names.\n";
+    std::cerr << "Loaded " << factionNames.size() << " faction names.\n";
+
+    // begin realms generation process
     rngInit(RNG_SEED);
     World world;
 
@@ -245,7 +271,7 @@ int main() {
     std::cerr << "Assigning factions...\n";
     // allocate the faction data
     for (int i = 0; i < MAX_FACTIONS; ++i) {
-        Faction *f = makeFaction();
+        Faction *f = makeFaction(factionNames);
         world.factions.push_back(f);
     }
 

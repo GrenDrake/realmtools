@@ -4,7 +4,6 @@
 
 // default data from data.cpp
 extern std::vector<Species> sapientSpecies;
-extern std::vector<const char*> factionNames;
 
 
 std::string makeNameCore(int depth);
@@ -134,15 +133,18 @@ Species* makeSpecies() {
     return s;
 }
 
-Faction* makeFaction() {
+Faction* makeFaction(const std::vector<std::string> &factionNames) {
     static unsigned identCounter = 0;
     Faction *f = new Faction;
     f->ident = identCounter;
     ++identCounter;
     if (f->ident == 0) f->name = "Independant";
-    else if (f->ident < static_cast<int>(factionNames.size())) {
-        f->name = factionNames[f->ident];
-    } else f->name = makeName();
+    else {
+        unsigned namePosition = f->ident - 1;
+        if (namePosition < factionNames.size()) {
+            f->name = factionNames[namePosition];
+        } else f->name = makeName();
+    }
     int colorNum = f->ident;
     f->r = colourList[colorNum].r;
     f->g = colourList[colorNum].g;
