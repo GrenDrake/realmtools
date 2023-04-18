@@ -98,7 +98,7 @@ void findNearXY(World &world, const std::vector<std::string> &arguments) {
     std::sort(work.begin(), work.end(), realmNearSort);
 
     std::cout << "     REALM                   DIST  X   Y   HR  PRIMARY SPECIES\n";
-    for (unsigned i = 0; i < work.size() && i < count; ++i) {
+    for (unsigned i = 0; i < work.size() && i < static_cast<unsigned>(count); ++i) {
         const Realm *r = work[i];
         Species *s = world.speciesByIdent(r->primarySpecies);
         std::cout << std::setw(3) << r->ident << ": ";
@@ -112,7 +112,7 @@ void findNearXY(World &world, const std::vector<std::string> &arguments) {
 }
 
 void randomRealm(World &world, const std::vector<std::string> &arguments) {
-    int count = 1;
+    unsigned count = 1;
     if (arguments.size() > 1) count = strToInt(arguments[1]);
     if (count < 1) {
         std::cout << "Invalid argument.\n\n";
