@@ -224,6 +224,9 @@ int main() {
             }
         }
     }
+    if (groupCount == lastGroupCount) {
+        std::cout << "\tWARNING: unmerged groups remain; reduce universe size and retry.\n";
+    }
 
     std::cerr << "Expanding some leafs...\n";
     for (Realm *r : world.realms) {
