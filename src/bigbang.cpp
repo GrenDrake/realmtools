@@ -273,17 +273,23 @@ int main() {
 
     std::cerr << "Assigning factions...\n";
     // allocate the faction data
-    for (int i = 0; i < MAX_FACTIONS; ++i) {
+    for (unsigned i = 0; i < MAX_FACTIONS && i < realmsToCreate; ++i) {
         Faction *f = makeFaction(factionNames);
         world.factions.push_back(f);
     }
 
     // determine realm factions
     std::vector<Realm*> homes;
-    for (int i = 1; i < MAX_FACTIONS; ++i) {
+    for (int i = 1; i < static_cast<int>(world.factions.size()); ++i) {
         Realm *r = nullptr;
-        bool valid;
+        bool valid = false;
+        int iterations = 0;
         do {
+            ++iterations;
+            if (iterations > MAX_ITERATIONS) {
+                valid = false;
+                break;
+            }
             valid = true;
             int id = 1 + rngNext(world.realms.size());
             r = world.realmByIdent(id);
@@ -294,14 +300,16 @@ int main() {
                     break;
                 }
             }
+
         } while (!valid);
         if (!valid) {
             std::cerr << "\tFailed to place faction " << i << ".\n";
+        } else {
+            r->faction = i;
+            r->factionHome = true;
+            world.factions[i]->home = r->ident;
+            homes.push_back(r);
         }
-        r->faction = i;
-        r->factionHome = true;
-        world.factions[i]->home = r->ident;
-        homes.push_back(r);
     }
 
     int assigned;
