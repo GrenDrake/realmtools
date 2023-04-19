@@ -248,17 +248,23 @@ Species* World::speciesByIdent(int ident) {
 }
 
 std::vector<int> World::findPath(int from, int to) {
+    for (Realm *r : realms) {
+        r->work2 = false;
+    }
+
     std::vector<int> path;
     setDistances(to);
     int cur = from;
     while (cur != to) {
         path.push_back(cur);
         Realm *r = realmByIdent(cur);
+        r->work2 = true;
         int lowest = -1;
         int lowestDist = 9999;
         for (const Link &l : r->links) {
             Realm *t = realmByIdent(l.linkTo);
             if (!t) return path;
+            if (t->work2) continue;
             if (t->work1 < lowestDist) {
                 lowestDist = t->work1;
                 lowest = t->ident;
