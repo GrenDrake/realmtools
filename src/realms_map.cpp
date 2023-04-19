@@ -3,6 +3,37 @@
 #include <iostream>
 #include "realms.h"
 
+struct Colour { int r; int g; int b; };
+std::vector<Colour> colourList = {
+    {43,206,72},    // forest
+    {255,204,153},  // desert
+    {240,163,255},  // tundra
+    {76,0,92},      // plains
+    {25,25,25},     // savanna
+    {0,92,49},      // jungle
+    {0,117,220},    // aquatic
+    {153,63,0},     // swamp
+    {128,128,128},
+    {148,255,181},
+    {143,124,0},
+    {157,204,0},
+    {194,0,136},
+    {0,51,128},
+    {255,164,5},
+    {255,168,187},
+    {66,102,0},
+    {255,0,16},
+    {94,241,242},
+    {0,153,143},
+    {224,255,102},
+    {116,10,255},
+    {153,0,0},
+    {255,255,128},
+    {255,255,0},
+    {255,80,5}
+};
+
+
 void makeSVG(World &world, const std::vector<std::string> &arguments) {
     const int xOffset = 6;
     const int yOffset = 2;
@@ -66,46 +97,39 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
 
     // draw realm dots
     for (Realm *r : world.realms) {
-        const Species *s = world.speciesByIdent(r->primarySpecies);
         int realX = (r->x + xOffset * 2) * scale;
         int realY = (r->y + yOffset) * scale;
         svgMap << "\t<circle cx=\"" << realX << "\" cy=\"" << realY;
         svgMap << "\" r=\"5\" ";
         svgMap << "fill=\"#" << std::hex << std::setfill('0');
-        if (s) {
-            svgMap << std::setw(2) << s->r;
-            svgMap << std::setw(2) << s->g;
-            svgMap << std::setw(2) << s->b;
-            svgMap << "\" />\n" << std::dec;
-        } else {
-            svgMap << "777777\" />\n" << std::dec;
-        }
+        svgMap << std::setw(2) << colourList[static_cast<int>(r->biome)].r;
+        svgMap << std::setw(2) << colourList[static_cast<int>(r->biome)].g;
+        svgMap << std::setw(2) << colourList[static_cast<int>(r->biome)].b;
+        svgMap << "\" />\n" << std::dec;
         svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY - 7;
         svgMap << "\" text-anchor=\"middle\" font-size=\"smaller\">";
-        svgMap << r->name << " [" << r->ident << "]</text>\n";
-        if (s) {
-            svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY + 7;
-            svgMap << "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" font-size=\"smaller\">";
-            svgMap << s->abbrev << " [" << s->ident << "]</text>\n";
-        }
+        svgMap << r->name << "</text>\n";
+        svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY + 7;
+        svgMap << "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" font-size=\"smaller\">[";
+        svgMap << r->ident << "]</text>\n";
     }
 
-    // draw species legend
+    // draw biome legend
     svgMap << "\t<text x=\"45\" y=\"" << 20 + yOffset * scale;
     svgMap << "\" font-size=\"smaller\" font-weight=\"bold\">";
-    svgMap << "SPECIES</text>\n";
+    svgMap << "BIOMES</text>\n";
 
     int counter = 0;
-    for (Species *s : world.species) {
+    for (int i = 0; i < static_cast<int>(Biome::BiomeCount); ++i) {
         svgMap << "\t<rect x=\"25\" y=\"" << (28 + 20 * counter) + yOffset * scale;
         svgMap << "\" width=\"15\" height=\"15\" fill=\"#";
         svgMap << std::hex << std::setfill('0');
-        svgMap << std::setw(2) << s->r << std::setw(2) << s->g;
-        svgMap << std::setw(2) << s->b << "\"/>\n" << std::dec;
+        svgMap << std::setw(2) << colourList[i].r << std::setw(2) << colourList[i].g;
+        svgMap << std::setw(2) << colourList[i].b << "\"/>\n" << std::dec;
 
         svgMap << "\t<text x=\"" << 45 << "\" y=\"" << (40 + 20 * counter) + yOffset * scale;
         svgMap << "\" font-size=\"smaller\">";
-        svgMap << s->name << " [" << s->ident << "]</text>\n";
+        svgMap << static_cast<Biome>(i) << "</text>\n";
 
         ++counter;
     }
