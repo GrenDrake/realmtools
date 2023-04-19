@@ -46,6 +46,21 @@ void makeSQL(World &world, const std::vector<std::string> &arguments) {
     sqlfile << "    blue INTEGER\n";
     sqlfile << ");\n\n";
 
+    for (const Species *s : world.species) {
+        sqlfile << "INSERT INTO species VALUES ( ";
+        sqlfile << s->ident << ", ";
+        sqlfile << '"' << s->name << "\", ";
+        sqlfile << '"' << s->abbrev << "\", ";
+        sqlfile << '"' << s->stance << "\", ";
+        sqlfile << '"' << s->wings << "\", ";
+        sqlfile << s->height << ", ";
+        // sqlfile << s->homeRealm << ", ";
+        sqlfile << s->r << ", ";
+        sqlfile << s->g << ", ";
+        sqlfile << s->b << ");\n";
+
+    }
+    sqlfile << '\n';
 
     for (const Realm *r : world.realms) {
         if (!r) continue;
@@ -67,19 +82,12 @@ void makeSQL(World &world, const std::vector<std::string> &arguments) {
     }
     sqlfile << '\n';
 
-    for (const Species *s : world.species) {
-        sqlfile << "INSERT INTO species VALUES ( ";
-        sqlfile << s->ident << ", ";
-        sqlfile << '"' << s->name << "\", ";
-        sqlfile << '"' << s->abbrev << "\", ";
-        sqlfile << '"' << s->stance << "\", ";
-        sqlfile << '"' << s->wings << "\", ";
-        sqlfile << s->height << ", ";
-        // sqlfile << s->homeRealm << ", ";
-        sqlfile << s->r << ", ";
-        sqlfile << s->g << ", ";
-        sqlfile << s->b << ");\n";
-
+    for (const Realm *r : world.realms) {
+        if (!r) continue;
+        for (const Link &l : r->links) {
+            sqlfile << "INSERT INTO links VALUES ( ";
+            sqlfile << r->ident << ", " << l.linkTo << " );\n";
+        }
     }
 
     std::cout << "Wrote SQL file to realms.sql\n\n";
