@@ -21,7 +21,6 @@ const int MAX_SPECIES = 30;
 const int MAX_WIDTH = 200;
 const int MAX_HEIGHT = MAX_WIDTH * 2 / 3;
 const int MAX_ITERATIONS = 100;
-const int MAX_REALMS = 1000;
 const int RNG_SEED = 234;
 const int MAX_LINK_DIST = 10;
 const int SPECIES_MIN_DIST = 3;
@@ -112,10 +111,33 @@ bool fileToList(const std::string &filename, std::vector<std::string> &theList) 
     return true;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     std::string realmNameFile = "realm_names.txt";
     std::string factionNameFile = "faction_names.txt";
-
+    unsigned realmsToCreate = 40;
+    
+    // Process command line arguments
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "-h" || arg == "--help" || arg == "-v" || arg == "--version") {
+            std::cerr << "BIGBANG universe creator, Alpha\n";
+            return 0;
+        } else if (arg == "-c" || arg == "--count") {
+            ++i;
+            if (i >= argc) {
+                std::cerr << "Expected realm count.\n";
+                return 1;
+            }
+            int count = strToInt(argv[i]);
+            if (count < 1) {
+                std::cerr << "Realm count must be positive integer.\n";
+                return 1;
+            } else realmsToCreate = count;
+        } else {
+            std::cerr << "Unknown argument " << arg << ".\n";
+            return 1;
+        }
+    }
     // Load premade names from file
     fileToList(realmNameFile, realmNames);
     fileToList(factionNameFile, factionNames);
@@ -129,7 +151,7 @@ int main() {
     const int minDist = 3;
 
     std::cerr << "Allocating and positioning realms...\n";
-    for (unsigned i = 0; i < MAX_REALMS; ++i) {
+    for (unsigned i = 0; i < realmsToCreate; ++i) {
         Realm *r = new Realm;
         r->ident = i + 1;
 
