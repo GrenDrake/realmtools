@@ -161,6 +161,7 @@ void showRealm(World &world, const std::vector<std::string> &arguments) {
     }
 
     std::cout << r->name << " [" << r->ident << "]\n";
+    std::cout << "Map Position: " << r->x << ", " << r->y << "\n";
     std::cout << "Links:";
     for (const Link &l : r->links) {
         std::cout << " <" << l.linkTo;
