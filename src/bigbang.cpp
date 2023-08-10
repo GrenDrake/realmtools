@@ -114,7 +114,7 @@ bool fileToList(const std::string &filename, std::vector<std::string> &theList) 
 int main(int argc, char *argv[]) {
     std::string realmNameFile = "realm_names.txt";
     std::string factionNameFile = "faction_names.txt";
-    unsigned realmsToCreate = 40;
+    unsigned realmsToCreate = 500;
     
     // Process command line arguments
     for (int i = 1; i < argc; ++i) {
