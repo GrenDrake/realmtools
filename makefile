@@ -5,7 +5,7 @@ CXXFLAGS=-std=c++11 -g -Wall $(SDL_CXX)
 BIGBANG=bigbang.exe
 BIGBANG_OBJS=src/bigbang.o src/bb_generator.o src/world.o src/utility.o src/data.o
 REALMS=realms.exe
-REALMS_OBJS=src/realms.o src/realms_map.o src/realms_sql.o src/realms_gviz.o src/realms_list.o src/realms_stats.o src/world.o src/utility.o
+REALMS_OBJS=src/realms.o src/realms_map.o src/realms_sql.o src/realms_gviz.o src/realms_json.o src/realms_list.o src/realms_stats.o src/world.o src/utility.o
 VIEWER=viewer.exe
 VIEWER_OBJS=src_viewer/viewer.o src_viewer/viewer_ui.o src_viewer/viewer_realms.o src_viewer/viewer_species.o src/world.o  src/utility.o
 

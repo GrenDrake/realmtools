@@ -15,6 +15,7 @@
 void showHelp(World &world, const std::vector<std::string> &arguments);
 
 void makeGViz(World &world, const std::vector<std::string> &arguments);
+void makeJSON(World &world, const std::vector<std::string> &arguments);
 void makeSQL(World &world, const std::vector<std::string> &arguments);
 void makeSVG(World &world, const std::vector<std::string> &arguments);
 void statsDispatcher(World &world, const std::vector<std::string> &arguments);
@@ -258,6 +259,8 @@ std::vector<CommandInfo> commands{
                                               "Outputs GraphViz dot file." },
     { "help",          showHelp,        1, 2, "[command]",
                                               "Display list of valid commands. If a command is specified, displays information on command usage instead." },
+    { "json",          makeJSON,        1, 1, "",
+                                              "Outputs realms data as JSON." },
     { "list",          listDispatcher,  2, 3, "(factions|realms|species) [sort by]",
                                               "Displays list of all factions, realms, or species." },
     { "near",          findNear,        3, 3, "(to realm) (within distance)",

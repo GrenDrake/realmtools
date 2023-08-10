@@ -12,6 +12,7 @@ realms
 *.sql
 *.db
 *.dot
+*.js
 
 # OS and Editor Files
 .DS_Store
