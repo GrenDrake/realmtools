@@ -57,14 +57,15 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
     svgMap << "\txmlns=\"http://www.w3.org/2000/svg\">\n";
 
     // draw grid
+    svgMap << "\t<g inkscape:label=\"Grid\" inkscape:groupmode=\"layer\" id=\"layer_grid\">\n";
     for (int x = 0; x <= maxX; x += 5) {
         int realX = (x + xOffset * 2) * scale;
         if (x > 0) {
-            svgMap << "\t<text x=\"" << realX << "\" y=\"" << mapTop - 10;
+            svgMap << "\t\t<text x=\"" << realX << "\" y=\"" << mapTop - 10;
             svgMap << "\">" << x << "</text>\n";
         }
 
-        svgMap << "\t<line x1=\"" << realX << "\" x2=\"" << realX;
+        svgMap << "\t\t<line x1=\"" << realX << "\" x2=\"" << realX;
         svgMap << "\" y1=\"" << mapTop << "\" y2=\"" << mapBottom;
         svgMap << "\" stroke=\"grey";
         svgMap << "\" stroke-width=\"1\"/>\n";
@@ -79,8 +80,10 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
         svgMap << "\" stroke=\"grey";
         svgMap << "\" stroke-width=\"1\"/>\n";
     }
+    svgMap << "\t</g>\n";
 
     // make link lines
+    svgMap << "\t<g inkscape:label=\"Realm Links\" inkscape:groupmode=\"layer\" id=\"layer_realm_links\">\n";
     for (Realm *r : world.realms) {
         int realX = (r->x + xOffset * 2) * scale;
         int realY = (r->y + yOffset) * scale;
@@ -89,50 +92,63 @@ void makeSVG(World &world, const std::vector<std::string> &arguments) {
             if (!t) continue;
             int targetX = (t->x + xOffset * 2) * scale;
             int targetY = (t->y + yOffset) * scale;
-            svgMap << "\t<line x1=\"" << realX << "\" x2=\"" << targetX;
+            svgMap << "\t\t<line x1=\"" << realX << "\" x2=\"" << targetX;
             svgMap << "\" y1=\"" << realY << "\" y2=\"" << targetY;
             svgMap << "\" stroke=\"orange\" stroke-width=\"2\"/>\n";
         }
     }
+    svgMap << "\t</g>\n";
 
+    svgMap << "\t<g inkscape:label=\"Realms\" inkscape:groupmode=\"layer\" id=\"layer_realms\">\n";
     // draw realm dots
     for (Realm *r : world.realms) {
         int realX = (r->x + xOffset * 2) * scale;
         int realY = (r->y + yOffset) * scale;
-        svgMap << "\t<circle cx=\"" << realX << "\" cy=\"" << realY;
+        svgMap << "\t\t<circle cx=\"" << realX << "\" cy=\"" << realY;
         svgMap << "\" r=\"5\" ";
         svgMap << "fill=\"#" << std::hex << std::setfill('0');
         svgMap << std::setw(2) << colourList[static_cast<int>(r->biome)].r;
         svgMap << std::setw(2) << colourList[static_cast<int>(r->biome)].g;
         svgMap << std::setw(2) << colourList[static_cast<int>(r->biome)].b;
         svgMap << "\" />\n" << std::dec;
-        svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY - 7;
+    }
+    svgMap << "\t</g>\n";
+
+    svgMap << "\t<g inkscape:label=\"Realm Labels\" inkscape:groupmode=\"layer\" id=\"layer_realm_labels\">\n";
+    // draw realm labels
+    for (Realm *r : world.realms) {
+        int realX = (r->x + xOffset * 2) * scale;
+        int realY = (r->y + yOffset) * scale;
+        svgMap << "\t\t<text x=\"" << realX << "\" y=\"" << realY - 7;
         svgMap << "\" text-anchor=\"middle\" font-size=\"smaller\">";
         svgMap << r->name << "</text>\n";
-        svgMap << "\t<text x=\"" << realX << "\" y=\"" << realY + 7;
+        svgMap << "\t\t<text x=\"" << realX << "\" y=\"" << realY + 7;
         svgMap << "\" text-anchor=\"middle\" dominant-baseline=\"hanging\" font-size=\"smaller\">[";
         svgMap << r->ident << "]</text>\n";
     }
+    svgMap << "\t</g>\n";
 
     // draw biome legend
-    svgMap << "\t<text x=\"45\" y=\"" << 20 + yOffset * scale;
+    svgMap << "\t<g inkscape:label=\"Legend (Biome)\" inkscape:groupmode=\"layer\" id=\"layer_biome\">\n";
+    svgMap << "\t\t<text x=\"45\" y=\"" << 20 + yOffset * scale;
     svgMap << "\" font-size=\"smaller\" font-weight=\"bold\">";
     svgMap << "BIOMES</text>\n";
 
     int counter = 0;
     for (int i = 0; i < static_cast<int>(Biome::BiomeCount); ++i) {
-        svgMap << "\t<rect x=\"25\" y=\"" << (28 + 20 * counter) + yOffset * scale;
+        svgMap << "\t\t<rect x=\"25\" y=\"" << (28 + 20 * counter) + yOffset * scale;
         svgMap << "\" width=\"15\" height=\"15\" fill=\"#";
         svgMap << std::hex << std::setfill('0');
         svgMap << std::setw(2) << colourList[i].r << std::setw(2) << colourList[i].g;
         svgMap << std::setw(2) << colourList[i].b << "\"/>\n" << std::dec;
 
-        svgMap << "\t<text x=\"" << 45 << "\" y=\"" << (40 + 20 * counter) + yOffset * scale;
+        svgMap << "\t\t<text x=\"" << 45 << "\" y=\"" << (40 + 20 * counter) + yOffset * scale;
         svgMap << "\" font-size=\"smaller\">";
         svgMap << static_cast<Biome>(i) << "</text>\n";
 
         ++counter;
     }
+    svgMap << "\t</g>\n";
 
 
     svgMap << "</svg>\n";
